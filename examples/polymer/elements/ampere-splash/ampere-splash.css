@@ -1,0 +1,5 @@
+:host {
+	/* _height : 100%; */
+	display: block;
+	border : solid lightgrey 1px;
+}

@@ -1,0 +1,51 @@
+/* make overlay disappear when not opened
+	this is actuallly not needed but on chrome the backdrop will not be removed
+	(polymer 0.4.2)
+*/
+/* TODO : doesnt work here for some reason
+	workaround was to set it as inline <style> in ampere-app.html
+.core-overlay-backdrop {
+display : none;
+}
+
+.core-overlay-backdrop.core-opened {
+display : block;
+}
+*/
+/*
+:host paper-toast {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+*/
+
+:host paper-toast::shadow .toast-text {
+	justify-content: center;
+	flex-direction: column;
+	display: flex;
+}
+
+/* DOES NOT WORK YET*/
+:host paper-toast::shadow .toast-text:not(.toast-action):empty {
+	display : none;
+}
+
+:host paper-toast::shadow .toast-text.toast-action {
+	flex-direction: row;
+}
+
+:host #toast paper-item {
+	color : #4285f4;
+}
+
+:host #toast[error] paper-item {
+	color  : #eeff41;
+	/*min-width : inherit;*/
+}
+
+:host #toast paper-item::shadow .button-content {
+	padding : 0;
+	justify-content : center;
+	min-height : 24px;
+}

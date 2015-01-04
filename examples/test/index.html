@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>a3 test</title>
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- Place favicon.ico and apple-touch-icon(s) in the root directory -->
+	</head>
+	<body>
+		<!--[if lt IE 11]>
+		<p>
+			You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.
+		</p>
+		<![endif]-->
+
+		<!-- Add your site or application content here -->
+		<dfn>Press <kbd>F12</kbd> to play with <strong>Ampere</strong> in the javascript console.</dfn>
+
+		<script>
+			window.Ampere = {
+				VERBOSE : true
+			};
+		</script>
+
+		<script src="../../node_modules/traceur/bin/traceur-runtime.js"></script>
+		<script type="not/inuse" src="../../build/browserify/ampere-production-uglifyjs-min.js"></script>
+		<script src="../../build/browserify/ampere.js"></script>
+		<script src="index.js"></script>
+	</body>
+</html>

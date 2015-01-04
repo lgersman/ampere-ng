@@ -1,0 +1,9 @@
+:host core-toolbar.local.transitions {
+	background-color: gray;
+	color: white;
+	fill: white;
+}
+
+:host core-toolbar.transitions {
+	background-color: inherit;
+}

@@ -1,0 +1,14 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<polymer-element name="dyn-control">
+	<template>
+		<link rel="stylesheet" href="dyn-control.css">
+		<content>
+				<template bind="{{items.length as length}}">
+					<span>{{items | stringify}}</span>
+					<button on-tap="{{onClicked}}">on-click</button>
+				</template>
+		</content>
+	</template>
+	<script src="dyn-control.js"></script>
+</polymer-element>

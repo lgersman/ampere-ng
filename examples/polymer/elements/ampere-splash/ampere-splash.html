@@ -1,0 +1,18 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../ampere-app/ampere-app.html">
+
+<polymer-element name="ampere-splash" attributes="app">
+  <template>
+    <content>
+      <link rel="stylesheet" href="ampere-splash.css">
+      <template if="{{state=='pending'}}">
+        <div>Initializing "{{app.view.state.module.name}}" ...</div>
+      </template>
+
+      <template if="{{state=='fullfilled'}}">
+        <ampere-app app="{{app}}"></ampere-app>
+      </template>
+    </content>
+  </template>
+  <script src="ampere-splash.js"></script>
+</polymer-element>
