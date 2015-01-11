@@ -18,6 +18,8 @@ function async(makeGenerator){
   }
 }
 
+# test spwan erklären
+
 # polymer
 
 * notify readonly properties : http://www.html5rocks.com/en/tutorials/es7/observe/?redirect_from_locale=de#toc-synth-change-records

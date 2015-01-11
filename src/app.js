@@ -8,6 +8,44 @@ import Constants from './constants';
 import Transition from './transition';
 
 	/**
+	* injects setView call into undo/redo function
+	*/
+function wrapOperation(operation:Function, view:View, setView:Function) {
+	let wrapper = function() {
+		let reverseView = view.state.module.app.view;
+
+		if(typeof(operation)==='function') {
+			let promise = new Promise((resolve, reject)=>{
+				try {
+					return Promise.resolve(operation()).then(resolve, reject);
+				} catch(ex) {
+					reject(ex);
+				}
+			});
+
+			promise = promise.then(
+					// wait for transition view to be ready
+				reverseOperation=>view.promise.then(()=>{
+					setView(view);
+					if(typeof(reverseOperation)==='function') {
+						return wrapOperation(reverseOperation, reverseView, setView);
+					} else {
+						return reverseOperation;
+					}
+				}),
+				ex=>Promise.reject(ex)
+			);
+
+			return promise;
+		} else {
+			return Promise.resolve(operation);
+		}
+	};
+
+	return wrapper;
+}
+
+	/**
 	*	default executor implementation
 
 	* @param transition the transition to execute
@@ -28,20 +66,11 @@ function defaultExecutor(transition:Transition,setView:Function,...params) {
 		// execute redo operation
 	promise = promise.then(
 		redo=>{
-			if(typeof(redo)==='function') {
-				return new Promise((resolve, reject)=>{
-					try {
-						return Promise.resolve(redo()).then(resolve, reject);
-					} catch(ex) {
-						reject(ex);
-					}
-				});
-			} else {
-				return Promise.resolve(redo);
-			}
+			return wrapOperation(redo, transition.view, setView)();
 		}
 	);
 
+	/*
 		// set view when redo operation is ready
 	promise = promise.then(
 			// wait for transition view to be ready
@@ -51,6 +80,7 @@ function defaultExecutor(transition:Transition,setView:Function,...params) {
 		}),
 		ex=>Promise.reject(ex)
 	);
+	*/
 
 	return promise;
 }
@@ -74,27 +104,26 @@ export default class App extends Base {
 		let	_view = view,
 				_executor,
 				_uiInterface,
-				setView = function(view:View) {
-					let notifier;
+				setView = (function(notifier) {
+					return function setView(view:View) {
+						if(notifier) {
+							let oldView = _view;
 
-					(notifier = Object.getNotifier) && (notifier=notifier(this));
-					if(notifier) {
-						let oldView = _view;
+							// not needed here
+							//notifier.performChange('view', ()=>_view=view, this);
 
-						// not needed here
-						//notifier.performChange('view', ()=>_view=view, this);
+							_view = view;
 
-						_view = view;
-
-						notifier.notify({
-							type: 'update',
-							name: 'view',
-							oldValue: oldView
-						});
-					} else {
-						_view=view;
-					}
-				}.bind(this)
+							notifier.notify({
+								type: 'update',
+								name: 'view',
+								oldValue: oldView
+							});
+						} else {
+							_view=view;
+						}
+					}.bind(this);
+				}).call(this, Object.getNotifier && Object.getNotifier(this));
 		;
 		Object.defineProperties(this, {
 			'view'		 : {

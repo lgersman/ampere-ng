@@ -733,6 +733,61 @@ describe("App", function () {
 				});
 			});
 
+			describe("aborts if the redo function returned by transition.transaction(...) throws an exception", done=>{
+				const ERROR = "ooooops";
+
+				let createMockModuleView = function() {
+					let view;
+
+					Ampere.domain(null, (domain, createModule)=>{
+						createModule(null, (module, createState)=>{
+							createState('inc', (state, createView, createTransition)=>{
+								view = createView(null, view=>{
+									util.createMockTemplate(view, '');
+								});
+
+								createTransition('immediate',(transition)=>{
+									transition.transaction = (transition, ...params)=>{
+										return ()=>{
+											throw new Error(ERROR)
+										};
+									};
+								});
+
+								createTransition('promise',(transition)=>{
+									transition.transaction = (transition, ...params)=>{
+										return ()=>{
+											return new Promise((resolve, reject)=>{
+												reject(new Error(ERROR));
+											});
+										};
+									};
+								});
+							});
+						});
+					});
+
+					return view;
+				};
+
+				it("immediate", done=>{
+					let app = Ampere.app(createMockModuleView());
+					app.execute(app.view.state.transitions.immediate).catch(ex=>{
+						expect(ex.message.indexOf(ERROR)!==-1).toBe(true);
+						done();
+					});
+				});
+
+				it("promise", done=>{
+					let app = Ampere.app(createMockModuleView());
+
+					app.execute(app.view.state.transitions.promise).catch(ex=>{
+						expect(ex.message.indexOf(ERROR)!==-1).toBe(true);
+						done();
+					});
+				});
+			});
+
 			describe("returns the undo function returned by the redo function returned by transition.transaction(...)", ()=>{
 				let createMockModuleView = function() {
 					let view;
@@ -745,41 +800,21 @@ describe("App", function () {
 								});
 
 								createTransition('immediate_immediate',(transition)=>{
-									transition.transaction = (transition, ...params)=>{
-										return ()=>{
-											return params[0];
-										};
-									};
+									transition.transaction = (transition, ...params)=>()=>params[0];
 								});
 
 								createTransition('immediate_promise',(transition)=>{
-									transition.transaction = (transition, ...params)=>{
-										return new Promise(resolve=>{
-											resolve(params[0]);
-										});
-									};
+									transition.transaction = (transition, ...params)=>new Promise(resolve=>{
+										resolve(()=>params[0]);
+									});
 								});
 
 								createTransition('promise_immediate',(transition)=>{
-									transition.transaction = (transition, ...params)=>{
-										return new Promise(resolve=>{
-											resolve(()=>{
-												return params[0];
-											});
-										});
-									};
+									transition.transaction = (transition, ...params)=>new Promise(resolve=>resolve(()=>params[0]));
 								});
 
 								createTransition('promise_promise',(transition)=>{
-									transition.transaction = (transition, ...params)=>{
-										return new Promise(resolve=>{
-											resolve(
-												new Promise(resolve=>{
-													resolve(params[0]);
-												})
-											);
-										});
-									}
+									transition.transaction = (transition, ...params)=>new Promise(resolve=>resolve(new Promise(resolve=>resolve(()=>params[0]))));
 								});
 
 							});
@@ -789,24 +824,29 @@ describe("App", function () {
 					return view;
 				};
 
-				const PARAMS = [function undo() {}];
+				let undoCalled = false;
+				const PARAMS = [function undo() { return undoCalled=true; }];
 
 				it("immediate_immediate", done=>{
 					let app = Ampere.app(createMockModuleView());
 
 					app.execute(app.view.state.transitions.immediate_immediate, ...PARAMS).then(undo=>{
-						debugger
-						expect(undo).toBe(PARAMS[0]);
-						done();
+						undoCalled = false
+						undo().then(result=>{
+							expect(undoCalled).toBe(true);
+							done();
+						});
 					});
 				});
 
 				it("immediate_promise", done=>{
 					let app = Ampere.app(createMockModuleView());
-
 					app.execute(app.view.state.transitions.immediate_promise, ...PARAMS).then(undo=>{
-						expect(undo).toBe(PARAMS[0]);
-						done();
+						undoCalled = false
+						undo().then(result=>{
+							expect(undoCalled).toBe(true);
+							done();
+						});
 					});
 				});
 
@@ -814,8 +854,11 @@ describe("App", function () {
 					let app = Ampere.app(createMockModuleView());
 
 					app.execute(app.view.state.transitions.promise_immediate, ...PARAMS).then(undo=>{
-						expect(undo).toBe(PARAMS[0]);
-						done();
+						undoCalled = false
+						undo().then(result=>{
+							expect(undoCalled).toBe(true);
+							done();
+						});
 					});
 				});
 
@@ -823,11 +866,242 @@ describe("App", function () {
 					let app = Ampere.app(createMockModuleView());
 
 					app.execute(app.view.state.transitions.promise_promise, ...PARAMS).then(undo=>{
-						expect(undo).toBe(PARAMS[0]);
-						done();
+						undoCalled = false
+						undo().then(result=>{
+							expect(undoCalled).toBe(true);
+							done();
+						});
 					});
 				});
 
+			});
+		});
+
+		describe("then", ()=>{
+			// TODO
+		});
+
+		describe("undo/redo", ()=>{
+			describe("transition is undo/redoable (if undo/redo was provided)", done=>{
+				let createMockModule = function() {
+					let module;
+
+					Ampere.domain(null, (domain, createModule)=>{
+						module = createModule(null, (module, createState)=>{
+							createState('s', (state, createView, createTransition)=>{
+								state.value = 'a';
+
+								let b = createView('b', view=>util.createMockTemplate(view, ''));
+								let c = createView('c', view=>util.createMockTemplate(view, ''));
+
+								createTransition('concat_b',(transition)=>{
+									transition.transaction = (transition, ...params)=>{
+										let value = state.value,
+										redo = ()=>{
+											state.value = value + 'b';
+											return undo;
+										},
+										undo = ()=>{
+											state.value = value;
+											return redo;
+										};
+
+										return redo;
+									};
+								}, b);
+
+								createTransition('concat_c',(transition)=>{
+									transition.transaction = (transition, ...params)=>{
+										let value = state.value,
+										redo = ()=>{
+											state.value = value + 'c';
+											return undo;
+										},
+										undo = ()=>{
+											state.value = value;
+											return redo;
+										};
+
+										return redo;
+									};
+								}, c);
+
+								createTransition('no_redo',(transition)=>{
+									transition.transaction = (transition, ...params)=>{
+										return ()=>{};
+									};
+								}, b);
+							});
+						});
+					});
+
+					return module;
+				};
+
+				it("undo/redo a transition (canUndo,canRedo,canReset)", done=>spawn(function*() {
+					let module = createMockModule(),
+							app = Ampere.app(module.states.s.views.b)
+					;
+
+						// wait for app (i.e. the history) to be ready
+					yield app.promise;
+
+						// undo should be disabled
+					expect(app.history.canUndo).toBe(false);
+					expect(app.view.state.value).toEqual('a');
+					expect(app.view).toBe(app.view.state.views.b);
+					expect(app.history.canReset).toBe(false);
+
+					yield app.execute(app.view.state.transitions.concat_b);
+
+						// undo should be enabled
+					expect(app.history.canUndo).toBe(true);
+					expect(app.view.state.value).toEqual('ab');
+					expect(app.view).toBe(app.view.state.views.b);
+					expect(app.history.canReset).toBe(true);
+
+					yield app.history.undo();
+					expect(app.view.state.value).toEqual('a');
+
+						// undo should be disabled
+					expect(app.history.canUndo).toBe(false);
+					expect(app.history.canRedo).toBe(true);
+					expect(app.view).toBe(app.view.state.views.b);
+					expect(app.history.canReset).toBe(true);
+
+					yield app.history.redo();
+					expect(app.view.state.value).toEqual('ab');
+					expect(app.view).toBe(app.view.state.views.b);
+
+					yield app.execute(app.view.state.transitions.concat_b);
+					expect(app.view.state.value).toEqual('abb');
+
+					yield app.history.undo();
+					expect(app.view.state.value).toEqual('ab');
+					expect(app.history.canUndo).toBe(true);
+					expect(app.history.canRedo).toBe(true);
+					expect(app.history.canReset).toBe(true);
+
+					expect(app.view).toBe(app.view.state.views.b);
+					yield app.execute(app.view.state.transitions.concat_c);
+					expect(app.view.state.value).toEqual('abc');
+					expect(app.history.canUndo).toBe(true);
+					expect(app.history.canRedo).toBe(false);
+					expect(app.history.canReset).toBe(true);
+
+						// view should now be "c"
+					expect(app.view).toBe(app.view.state.views.c);
+
+					yield app.history.undo();
+					expect(app.view.toString()).toBe(app.view.state.views.b.toString());
+
+					yield app.history.redo();
+					expect(app.view.toString()).toBe(app.view.state.views.c.toString());
+
+					yield app.history.undo();
+					expect(app.view.toString()).toBe(app.view.state.views.b.toString());
+
+					yield app.history.redo();
+					expect(app.view.toString()).toBe(app.view.state.views.c.toString());
+
+					yield app.execute(app.view.state.transitions.no_redo);
+					expect(app.history.canReset).toBe(false);
+					expect(app.history.canUndo).toBe(false);
+					expect(app.history.canRedo).toBe(false);
+					done();
+				}));
+			});
+
+			describe("history.then(able) and history properties busy", done=>{
+				let createMockModuleView = function() {
+					let view;
+
+					Ampere.domain(null, (domain, createModule)=>{
+						createModule(null, (module, createState)=>{
+							createState(null, (state, createView, createTransition)=>{
+									// will be used by the tests to control when undo and redo return
+								state.fn = null;
+
+								view = createView(null, view=>util.createMockTemplate(view, ''));
+
+								createTransition('go',(transition)=>{
+									transition.transaction = (transition, ...params)=>{
+										return state.fn();
+									};
+								});
+							});
+						});
+					});
+
+					return view;
+				};
+
+				it("history.then/history.busy will track transition completion", done=>spawn(function*() {
+					let view = createMockModuleView(), app = Ampere.app(view);
+						// wait for app (i.e. the history) to be ready
+					yield app.promise;
+
+						// simple transition
+					let finish, p = new Promise(resolve=>finish=resolve);
+					view.state.fn = ()=>{
+						expect(app.history.busy).toBe(true);
+
+						return p;
+					};
+
+					let tests = function*() {
+							// should be immediately executed
+						app.history.then(()=>expect(app.history.busy).toBe(false));
+
+							// finish promise after 200ms
+						setTimeout(finish, 100);
+
+							// wait for transaction finished
+						yield app.execute(app.view.state.transitions.go);
+						expect(app.history.busy).toBe(false);
+
+							// ensure thenable is fine
+						yield app.history.then(()=>Promise.resolve(true));
+					};
+					yield *tests();
+
+						// transition returning a redo function
+					finish, p = new Promise(resolve=>finish=resolve);
+					view.state.fn = ()=>{
+						return ()=>{
+							expect(app.history.busy).toBe(true);
+
+							return p;
+						}
+					};
+					yield *tests();
+
+						// transition returning a redo function via promise
+					finish, p = new Promise(resolve=>finish=resolve);
+					view.state.fn = ()=>{
+						return Promise.resolve(()=>{
+							expect(app.history.busy).toBe(true);
+
+							return p;
+						});
+					};
+					yield *tests();
+
+						// transition returning a redo function-with-promise-result returned via promise
+					finish, p = new Promise(resolve=>finish=resolve);
+					view.state.fn = ()=>{
+						return Promise.resolve(()=>{
+							return Promise.resolve().then(()=>{
+								expect(app.history.busy).toBe(true);
+
+								return p;
+							})
+						});
+					};
+					yield *tests();
+
+					done();
+				}));
 			});
 		});
 	});

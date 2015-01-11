@@ -1,8 +1,12 @@
+* update dependencies
+
+* update polymer
+
 * app.ui tests
 
+* port wrapOperation from app.js to polymer app.js
+
 * history undo/redo
-** call Object.notify for properties canUndo, canRedo, canReset
-** create readable property "busy" reflecting current history state (idle or not)
 ** server : -> file not found -> return current page
 ** client configurable (hashbang or native)
 

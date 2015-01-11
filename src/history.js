@@ -9,16 +9,32 @@ import {spawn} from './util';
 
 let PROPERTY_UNDO_STACK = Symbol('UNDO_STACK'),
 		PROPERTY_REDO_STACK = Symbol('REDO_STACK'),
-		PROPERTY_BUSY_PROMISE = Symbol('BUSY_PROMISE')
+		PROPERTY_BUSY_PROMISE = Symbol('BUSY_PROMISE'),
+		PROPERTY_BUSY = Symbol('BUSY')
 ;
 
 function _reset() {
-	this[PROPERTY_UNDO_STACK] = [];
+	let notifyCanPropertyChanges = _trackCanProperties.call(this);
 
+	this[PROPERTY_UNDO_STACK] = [];
 	this[PROPERTY_REDO_STACK] = [];
+
+	notifyCanPropertyChanges();
 }
 
 function _when(fn:Function) {
+		// since 'busy' is an synthetic property we need to notify changes manually
+		// to ensure Object.observe(...) will work for property 'busy'
+		// (use case polymer renderer : show always a backdrop overlay if history property 'busy'===true).
+
+		// set busy to true
+	let notifier = Object.getNotifier && Object.getNotifier(this), promise;
+	if(!this[PROPERTY_BUSY]) {
+		this[PROPERTY_BUSY]=true;
+		notifier && notifier.notify({type: 'update', name: 'busy', oldValue: false});
+	}
+
+		// execute argument fn
 	let handler = ()=>{
 		return new Promise((resolve, reject)=>{
 			try {
@@ -29,7 +45,46 @@ function _when(fn:Function) {
 		});
 	};
 
-	return this[PROPERTY_BUSY_PROMISE] = this[PROPERTY_BUSY_PROMISE].then(handler, handler);
+	promise = this[PROPERTY_BUSY_PROMISE].then(handler, handler);
+
+		// reset property 'busy' when promise state is finalized
+	let resetbusy_handler = ()=>{
+			// only if our promise is the last recent one
+			// we need to take care of resetting the 'busy' property
+		if(promise === this[PROPERTY_BUSY_PROMISE]) {
+			this[PROPERTY_BUSY]=false;
+			notifier && notifier.notify({type: 'update', name: 'busy', oldValue: true});
+		}
+	};
+	promise.then(resetbusy_handler, resetbusy_handler);
+
+	return this[PROPERTY_BUSY_PROMISE] = promise;
+}
+
+function _trackCanProperties() {
+	let notifier = Object.getNotifier && Object.getNotifier(this);
+
+	if(notifier) {
+		let canBefore = {
+			redo : this.canRedo,
+			undo : this.canUndo,
+			reset: this.canReset
+		};
+
+		return function notifyCanPropertyChanges() {
+			let canAfter = {
+				redo : this.canRedo,
+				undo : this.canUndo,
+				reset: this.canReset
+			};
+
+			canBefore.undo!==canAfter.undo && notifier.notify({type: 'update', name: 'canUndo', oldValue: canBefore.undo});
+			canBefore.redo!==canAfter.redo && notifier.notify({type: 'update', name: 'canRedo', oldValue: canBefore.redo});
+			canBefore.reset!==canAfter.reset && notifier.notify({type: 'update', name: 'canReset', oldValue: canBefore.reset});
+		}.bind(this);
+	} else {
+		return ()=>{};
+	}
 }
 
 export default class History extends Base {
@@ -48,7 +103,9 @@ export default class History extends Base {
 		let limit = options[Constants.HISTORY.LIMIT]!==undefined ? options[Constants.HISTORY.LIMIT] : Number.POSITIVE_INFINITY;
 		this.assert(typeof(limit)==='number' && limit>=0, `option HISTORY.LIMIT is expected to be a positive number but was ${limit}`);
 
-		this[PROPERTY_BUSY_PROMISE] = Promise.resolve("huhu");
+			// preset PROPERTY_BUSY_PROMISE property
+		this[PROPERTY_BUSY_PROMISE] = Promise.resolve(true);
+		this[PROPERTY_BUSY] = false;
 		this.reset();
 
 		Object.defineProperties(this, {
@@ -59,6 +116,10 @@ export default class History extends Base {
 			'limit' : {
 				value    : limit,
 				writable : false
+			},
+			'busy'		 : {
+				get      : ()=>this[PROPERTY_BUSY],
+				configurable : false
 			}
 			/*,
 			'size' : {
@@ -69,6 +130,14 @@ export default class History extends Base {
 			},
 			*/
 		});
+
+			// resolve history immediately
+		this.options[Base._PROMISIFY](()=>Promise.resolve(true));
+	}
+
+		// thenable interface of history
+	then(onFulfilled, onRejected) {
+		return this[PROPERTY_BUSY_PROMISE].then(onFulfilled, onRejected);
 	}
 
 		/**
@@ -95,7 +164,7 @@ export default class History extends Base {
 					reject(ex);
 				}
 			});
-
+/*
 			promise = promise.then(
 				redo=>{
 					if(typeof(redo)==='function') {
@@ -112,11 +181,13 @@ export default class History extends Base {
 				},
 				ex=>Promise.reject(ex)
 			);
-
+*/
 			promise = promise.then(
 				undo=>{
 						// if history is enabled
 					if(this.limit!==0) {
+						let notifyCanPropertyChanges = _trackCanProperties.call(this);
+
 							// cleanup redo stack
 						this[PROPERTY_REDO_STACK].splice(0);
 
@@ -129,9 +200,14 @@ export default class History extends Base {
 
 								// remove oldest undo entry if history limit is reached
 							this[PROPERTY_UNDO_STACK].length>this.limit && this[PROPERTY_UNDO_STACK].shift();
+						} else {
+							this[PROPERTY_UNDO_STACK] = [];
+							this[PROPERTY_REDO_STACK] = [];
 						}
+
+						notifyCanPropertyChanges();
 					}
-					
+
 					return Promise.resolve(undo);
 				},
 				ex=>Promise.reject(ex)
@@ -148,28 +224,40 @@ export default class History extends Base {
 					redoStack = this[PROPERTY_REDO_STACK]
 			;
 
-			let undoFunction = undoStack[undoStack.length-1];
+			let undoOperation = undoStack[undoStack.length-1];
 
 				// execute undo function and wrap result into a promise
 			let undoResult = new Promise((resolve, reject)=>{
 				try {
-					return Promise.resolve(undoFunction.fn()).then(resolve, reject);
+					return Promise.resolve(undoOperation.fn()).then(resolve, reject);
 				} catch(ex) {
 					reject(ex);
 				}
 			});
 
 			return undoResult.then(redo=>{
-						// remove operation from undo stack
-					undoStack.pop();
+					if(this.limit!==0) {
+						let notifyCanPropertyChanges = _trackCanProperties.call(this);
 
-					if(typeof(redo)==='function') {
-						redoStack.push(redo);
+							// remove operation from undo stack
+						undoStack.pop();
 
-							// remove oldest redo operation if redo count > limit
-						if(this.limit!==0 && redoStack.length>this.limit) {
-							redoStack.shift();
+						if(typeof(redo)==='function') {
+							redoStack.push({
+								fn 	 : redo,
+								view : this.app.view
+							});
+
+								// remove oldest redo operation if redo count > limit
+							if(redoStack.length>this.limit) {
+								redoStack.shift();
+							}
+
+							notifyCanPropertyChanges();
 						}
+					} else {
+						this[PROPERTY_UNDO_STACK] = [];
+						this[PROPERTY_REDO_STACK] = [];
 					}
 
 					return redo;
@@ -186,12 +274,12 @@ export default class History extends Base {
 					redoStack = this[PROPERTY_REDO_STACK]
 			;
 
-			let redoFunction = redoStack[redoStack.length-1];
+			let redoOperation = redoStack[redoStack.length-1];
 
 				// execute undo function and wrap result into a promise
 			let redoResult = new Promise((resolve, reject)=>{
 				try {
-					return Promise.resolve(redoFunction.fn()).then(resolve, reject);
+					return Promise.resolve(redoOperation.fn()).then(resolve, reject);
 				} catch(ex) {
 					reject(ex);
 				}
@@ -199,16 +287,28 @@ export default class History extends Base {
 
 			return redoResult.then(
 				undo=>{
-						// remove operation from redo stack
-					redoStack.pop();
+					if(this.limit!==0) {
+						let notifyCanPropertyChanges = _trackCanProperties.call(this);
 
-					if(typeof(undo)==='function') {
-						undoStack.push(undo);
+							// remove operation from redo stack
+						redoStack.pop();
 
-							// remove oldest undo operation if undo count > limit
-						if(this.limit!==0 && undoStack.length>this.limit) {
-							undoStack.shift();
+						if(typeof(undo)==='function') {
+							undoStack.push({
+								fn 	 : undo,
+								view : this.app.view
+							});
+
+								// remove oldest undo operation if undo count > limit
+							if(undoStack.length>this.limit) {
+								undoStack.shift();
+							}
+						} else {
+							this[PROPERTY_UNDO_STACK] = [];
+							this[PROPERTY_REDO_STACK] = [];
 						}
+
+						notifyCanPropertyChanges();
 					}
 
 					return undo;

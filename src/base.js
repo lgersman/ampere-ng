@@ -130,6 +130,10 @@ export default class Base {
 	get type() {
 		return this.options[Constants.TYPE];
 	}
+
+	toString() {
+		return this.options[Constants.NAMESPACE];
+	}
 }
 
 	// protected option key to retrieve wrapper function finalizing the derived object
