@@ -9,7 +9,7 @@
     "debug-tests": "node --debug-brk build/commonjs/test/test-node-specs.js -v",
     "serve": "node ./node_modules/.bin/gulp serve",
     "build": "node node_modules/.bin/gulp",
-    "postinstall": "cd examples/polymer/ && ../../node_modules/.bin/bower install Polymer/polymer Polymer/core-elements Polymer/paper-elements --save && cd ../.."
+    "__postinstall": "cd examples/polymer/ && ../../node_modules/.bin/bower install Polymer/polymer Polymer/core-elements Polymer/paper-elements --save && cd ../.."
   },
   "repository": {
     "type": "git",
