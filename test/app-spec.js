@@ -215,9 +215,10 @@ describe("App", function () {
 					transition.disabled = DISABLED_MESSAGE;
 
 					yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
+					debugger
 					throw new Error("should never execute");
 				} catch(ex) {
-					expect(ex.message.contains(DISABLED_MESSAGE)).toBe(true);
+					expect(ex.message.includes(DISABLED_MESSAGE)).toBe(true);
 				}
 
 					// disabled by rejected promise
@@ -226,7 +227,7 @@ describe("App", function () {
 					yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
 					throw new Error("should never execute");
 				} catch(ex) {
-					expect(ex.message.contains(DISABLED_MESSAGE)).toBe(true);
+					expect(ex.message.includes(DISABLED_MESSAGE)).toBe(true);
 				}
 
 					// disabled by rejected promise with delay
@@ -238,7 +239,7 @@ describe("App", function () {
 					yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
 					throw new Error("should never execute");
 				} catch(ex) {
-					expect(ex.message.contains(DISABLED_MESSAGE)).toBe(true);
+					expect(ex.message.includes(DISABLED_MESSAGE)).toBe(true);
 				}
 
 				done();
@@ -311,7 +312,7 @@ describe("App", function () {
 						yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
 						throw new Error("should never execute");
 					} catch(ex) {
-						expect(ex.message.contains("Failed to initialize transaction")).toBe(true);
+						expect(ex.message.includes("Failed to initialize transaction")).toBe(true);
 					}
 
 					done();
@@ -333,7 +334,7 @@ describe("App", function () {
 						yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
 						throw new Error("should never execute");
 					} catch(ex) {
-						expect(ex.message.contains("Failed to initialize transaction")).toBe(true);
+						expect(ex.message.includes("Failed to initialize transaction")).toBe(true);
 					}
 
 					done();
@@ -359,7 +360,7 @@ describe("App", function () {
 						yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
 						throw new Error("should never execute");
 					} catch(ex) {
-						expect(ex.message.contains("Failed to initialize transaction")).toBe(true);
+						expect(ex.message.includes("Failed to initialize transaction")).toBe(true);
 					}
 
 					done();
@@ -383,7 +384,7 @@ describe("App", function () {
 						yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
 						throw new Error("should never execute");
 					} catch(ex) {
-						expect(ex.message.contains("Failed to initialize transaction")).toBe(true);
+						expect(ex.message.includes("Failed to initialize transaction")).toBe(true);
 					}
 
 					done();
@@ -418,7 +419,7 @@ describe("App", function () {
 						yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
 						throw new Error("should never happen");
 					} catch(ex) {
-						expect(ex.message.contains("wow - problem occurred")).toBe(true);
+						expect(ex.message.includes("wow - problem occurred")).toBe(true);
 					}
 
 					done();
@@ -433,7 +434,7 @@ describe("App", function () {
 						yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
 						throw new Error("should never happen");
 					} catch(ex) {
-						expect(ex.message.contains("wow - problem occurred")).toBe(true);
+						expect(ex.message.includes("wow - problem occurred")).toBe(true);
 					}
 
 					done();

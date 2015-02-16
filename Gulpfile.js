@@ -6,8 +6,8 @@
 
 require('traceur').require.makeDefault(
   function(filename) {
-      // only transpile tasks.js
-    return filename.endsWith('tasks.js');
+      // only transpile tasks.js and example descriptions
+    return filename.endsWith('tasks.es6');
   }, {
     experimental       : true,
     arrayComprehension : true//,    // bug in traceur 0.0.72, must be explicitly set to true (its experimental, si it should be on by default)
@@ -18,4 +18,4 @@ require('traceur').require.makeDefault(
   }
 );
 
-require('./tasks.js');
+require('./tasks.es6');

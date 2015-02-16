@@ -106,6 +106,8 @@ export default class History extends Base {
 			// preset PROPERTY_BUSY_PROMISE property
 		this[PROPERTY_BUSY_PROMISE] = Promise.resolve(true);
 		this[PROPERTY_BUSY] = false;
+		this[PROPERTY_UNDO_STACK] = [];
+		this[PROPERTY_REDO_STACK] = [];
 		this.reset();
 
 		Object.defineProperties(this, {

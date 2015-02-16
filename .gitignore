@@ -1,4 +1,4 @@
 build
 node_modules
 ATTIC
-examples/polymer/bower_components
+npm-debug.log

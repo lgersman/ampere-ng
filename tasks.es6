@@ -3,24 +3,21 @@
   */
 
 const	gulp        = require('gulp'),
-      rimraf      = require('gulp-rimraf'),
+      del      = require('del'),
       es          = require('event-stream'),
       shell       = require('gulp-shell'),
       browserify  = require('browserify'),
       source      = require('vinyl-source-stream'),
-      gzip        = require('gulp-gzip'),
-      open        = require('open')
+      gzip        = require('gulp-gzip')
 ;
 
-function promisify( stream) {
+function promisify(stream) {
   return new Promise((resolve, reject)=>{
     stream.on('end', resolve).on('error', reject)
   });
 }
 
-gulp.task('clean', ()=>gulp.src(['./build', './dist'], {read : false})
-  .pipe( rimraf())
-);
+gulp.task('clean', cb=>del(['./build', './dist'], cb));
 
 gulp.task('prepare', ['clean'], ()=> {
   const dest = (path='')=>gulp.dest( `./build/${path}`);
@@ -74,38 +71,6 @@ gulp.task('test:node', ['build'], ()=>{
 
 gulp.task('test', ['test:node'], cb=>{
   cb();
-});
-
-gulp.task('serve', ['build', 'test'], ()=>{
-  let express    = require('express'),
-      gzipStatic = require('connect-gzip-static'),
-      app        = express()
-  ;
-	app
-    .use(require('connect-livereload')({port: 4002}))
-  	.use(require('serve-index')(__dirname))
-    .use(gzipStatic(__dirname))
-  	//.use(express.static(__dirname))
-  	.listen(4000)
-  ;
-
-	let tinylr = require('tiny-lr')();
-	tinylr.listen(4002);
-
-	var notifyLiveReload = event=>{
-	  let fileName = require('path').relative(__dirname, event.path);
-
-		tinylr.changed({
-			body: {
-				files: [fileName]
-			}
-		});
-	};
-
-	gulp.watch( './build/browserify/ampere.js', notifyLiveReload);
-  gulp.watch( ['./src/**/*.js', './test/**/*.js'], [ 'build', 'test']);
-
-  open( 'http://localhost:4000');
 });
 
 gulp.task('default', [ 'test'], (cb)=>console.log('Finished'));

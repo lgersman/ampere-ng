@@ -70,18 +70,6 @@ function defaultExecutor(transition:Transition,setView:Function,...params) {
 		}
 	);
 
-	/*
-		// set view when redo operation is ready
-	promise = promise.then(
-			// wait for transition view to be ready
-		undo=>transition.view.promise.then(()=>{
-			setView(transition.view);
-			return Promise.resolve(undo);
-		}),
-		ex=>Promise.reject(ex)
-	);
-	*/
-
 	return promise;
 }
 
@@ -206,7 +194,7 @@ export default class App extends Base {
 			this.log( "app is ready(arguments=" + JSON.stringify(args) + ')');
 			return args[0][0];
 		}, err=>{
-			this.log.error( "we have a problem : " + err);
+			//this.log.error( "failed to initialize app : " + err);
 			return Promise.reject( err);
 		});
 
