@@ -194,10 +194,6 @@ describe("Transition", ()=>{
 					});
 
 					createTransition(null, (async function(transition) {
-							// undefined transaction should return undefined
-						let val1 = await transition.transaction();
-						expect(val1).toBeUndefined();
-
 							// transaction should have transition as first parameter and given parameters at call as rest
 						transition.transaction = (transition,...args)=>{ return {transition, args}};
 						let val2 = await transition.transaction("hello", "world");
@@ -221,7 +217,7 @@ describe("Transition", ()=>{
 					createTransition('foo', transition=>{
 						expect(transition.options[Ampere.NAME]).toEqual( transition.name);
 							// namespace===[domain.name].[module.name].[state.name].[transition.name] for ampere views
-						expect(transition.options[Ampere.NAMESPACE]).toEqual( `Ampere.[default].${module.name}.${state.name}.${transition.name}`);
+						expect(transition.options[Ampere.NAMESPACE]).toEqual( `["Ampere"].[default].[${JSON.stringify(module.name)}].[${JSON.stringify(state.name)}].[${JSON.stringify(transition.name)}]`);
 						done();
 					});
 				});

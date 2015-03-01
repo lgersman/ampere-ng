@@ -22,7 +22,7 @@ describe("Domain", function () {
 		let domain = Ampere.domain(null,(domain, createModule)=>{});
 		expect(domain.options[Ampere.NAME]).toEqual( domain.name);
 			// namespace===name for domain objects
-		expect(domain.options[Ampere.NAMESPACE]).toEqual( 'Ampere.[default]');
+		expect(domain.options[Ampere.NAMESPACE]).toEqual( '["Ampere"].[default]');
 	});
 
 	it("create module with same name should fail", done=>{

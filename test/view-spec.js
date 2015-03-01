@@ -55,7 +55,7 @@ describe("View", function () {
 					expect(state.options[Ampere.NAME]).toEqual( state.name);
 						createView('foo', (view, createTemplate)=>{
 								// namespace===[domain.name].[module.name].[state.name].[view.name] for ampere views
-							expect(view.options[Ampere.NAMESPACE]).toEqual( `Ampere.[default].${module.name}.${state.name}.${view.name}`);
+							expect(view.options[Ampere.NAMESPACE]).toEqual( `["Ampere"].[default].[${JSON.stringify(module.name)}].[${JSON.stringify(state.name)}].[${JSON.stringify(view.name)}]`);
 							done();
 						});
 				});

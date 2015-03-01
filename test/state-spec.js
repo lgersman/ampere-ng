@@ -61,7 +61,7 @@ describe("State", function () {
 
 					expect(state.options[Ampere.NAME]).toEqual(state.name);
 						// namespace===[domain.name].[module.name].[state.name] for ampere states
-					expect(state.options[Ampere.NAMESPACE]).toEqual(`Ampere.[default].${module.name}.${state.name}`);
+					expect(state.options[Ampere.NAMESPACE]).toEqual(`["Ampere"].[default].[${JSON.stringify(module.name)}].[${JSON.stringify(state.name)}]`);
 					done();
 				});
 			});

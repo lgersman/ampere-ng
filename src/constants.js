@@ -12,17 +12,17 @@ Object.defineProperties(Constants, {
 	},
 		// unique object name
 	'NAME' : {
-		value	: 'AMPERE_NAME',
+		value	: Symbol('AMPERE_NAME'),
 		writable: false
 	},
 		// unique object namespace (derived from its name and parent name)
 	'NAMESPACE' : {
-		value	: 'AMPERE_NAMESPACE',
+		value	: Symbol('AMPERE_NAMESPACE'),
 		writable: false
 	},
 		// object type (module,state,transition,...)
 	'TYPE' : {
-		value	: 'AMPERE_TYPE',
+		value	: Symbol('AMPERE_TYPE'),
 		writable: false
 	},
 		// the log instance for this object
@@ -54,23 +54,47 @@ Object.defineProperties(Constants.UI, {
 		/**
 		 transition option hinting the occurrence of the transition. can be one of
 		 * 'global' transition should be rendered in the global transition list. this is the default for module transitions
-		 * 'local'  transition should be rendered into the state related transition list, this is the default for regular transitions (of states).
-		 * 'private' transitions should not be rendered in global and local transition list
+		 * 'local'  transition should be rendered into the state/view related transition list, this is the default for regular transitions (of states).
+		 * any other value can be used for your own occurence
 		*/
 	'SCOPE'	: {
 		value	: Symbol('AMPERE_UI_SCOPE'),
 		writable: false
 	},
+
 		/**
-		* may be used by the ui to retrieve the application web site
+		* priority can be used in conjunction with SCOPE to define the placement of the transition in its list (defined by SCOPE).
+		* the polymer renderer for example uses this option to place the transition at the left or right side of the toolbars
+		*
+		* value can be one of
+		* 'primary' transition should be rendered in the global transition list. this is the default for module transitions
+		* 'secondary'  transition should be rendered into the state/view related transition list, this is the default for regular transitions (of states).
+		* any other value can be used for your own occurence
+		*
+		* if no priority is set but a scope is given, scope group 'primary' will be assumed
 		*/
-	'HOMEPAGE'	: {
-		value	: 'AMPERE_UI_HOMEPAGE',
+	'SCOPE_PRIORITY'	: {
+		value	: Symbol('AMPERE_UI_SCOPE_PRIORITY'),
 		writable: false
 	},
+
+		/**
+		* group can be used in conjunction with SCOPE to define groups of transitions.
+		* transitions of one group are placed together in the transition list (defined by SCOPE).
+		* the polymer renderer for example uses this option also to to place the transition at the left or right side of the toolbars
+		*
+		* SCOPE_GROUP has lower impact than SCOPE_PRIORITY so that a transitions in same SCOPE but with different SCOPE_PRIORITY will not get grouped together.
+		*
+		* value can be any string or number
+		*/
+	'SCOPE_GROUP'	: {
+		value	: Symbol('AMPERE_UI_SCOPE_GROUP'),
+		writable: false
+	},
+
 		/*
 		* tells the ui that these view should be rendered on top of another view.
-		* a stacked view will be rendered as dialog with the previous view as background.
+		* a stacked view will be rendered as dialog with the parent view as background.
 		* stacking can have infinite levels.
 		*/
 	'PARENT'	: {
@@ -78,15 +102,19 @@ Object.defineProperties(Constants.UI, {
 		writable: false
 	},
 	'CAPTION'	: {
-		value	: 'AMPERE_UI_CAPTION',
+		value	: Symbol('AMPERE_UI_CAPTION'),
 		writable: false
 	},
 	'DESCRIPTION'	: {
-		value	: 'AMPERE_UI_DESCRIPTION',
+		value	: Symbol('AMPERE_UI_DESCRIPTION'),
 		writable: false
 	},
 	'ICON'			: {
-		value	: 'AMPERE_UI_ICON',
+		value	: Symbol('AMPERE_UI_ICON'),
+		writable: false
+	},
+	'HOTKEY'			: {
+		value	: Symbol('AMPERE_UI_HOTKEY'),
 		writable: false
 	}
 });

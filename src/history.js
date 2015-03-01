@@ -10,7 +10,8 @@ import {spawn} from './util';
 let PROPERTY_UNDO_STACK = Symbol('UNDO_STACK'),
 		PROPERTY_REDO_STACK = Symbol('REDO_STACK'),
 		PROPERTY_BUSY_PROMISE = Symbol('BUSY_PROMISE'),
-		PROPERTY_BUSY = Symbol('BUSY')
+		PROPERTY_BUSY = Symbol('BUSY'),
+		UNDOREDO_OPERATION_IN_PROGRESS = Symbol('UNDOREDO_OPERATION_IN_PROGRESS')
 ;
 
 function _reset() {
@@ -20,6 +21,8 @@ function _reset() {
 	this[PROPERTY_REDO_STACK] = [];
 
 	notifyCanPropertyChanges();
+
+	this[UNDOREDO_OPERATION_IN_PROGRESS]=false;
 }
 
 function _when(fn:Function) {
@@ -148,6 +151,7 @@ export default class History extends Base {
 		* was completed (or history was idle) and all values were reset to initial.
 		*/
 	reset() {
+		this[UNDOREDO_OPERATION_IN_PROGRESS]=true;
 		return _when.call(this, _reset);
 	}
 
@@ -186,8 +190,8 @@ export default class History extends Base {
 */
 			promise = promise.then(
 				undo=>{
-						// if history is enabled
-					if(this.limit!==0) {
+						// if history is enabled and no undo/redo operation is in progress
+					if(this.limit!==0 && !this[UNDOREDO_OPERATION_IN_PROGRESS]) {
 						let notifyCanPropertyChanges = _trackCanProperties.call(this);
 
 							// cleanup redo stack
@@ -221,6 +225,8 @@ export default class History extends Base {
 
 	undo() {
 		this.assert(this.canUndo, 'undo is disabled (canUndo===false)');
+
+		this[UNDOREDO_OPERATION_IN_PROGRESS]=true;
 		return _when.call(this, ()=>{
 			let undoStack = this[PROPERTY_UNDO_STACK],
 					redoStack = this[PROPERTY_REDO_STACK]
@@ -238,39 +244,44 @@ export default class History extends Base {
 			});
 
 			return undoResult.then(redo=>{
-					if(this.limit!==0) {
-						let notifyCanPropertyChanges = _trackCanProperties.call(this);
+				if(this.limit!==0) {
+					let notifyCanPropertyChanges = _trackCanProperties.call(this);
 
-							// remove operation from undo stack
-						undoStack.pop();
+						// remove operation from undo stack
+					undoStack.pop();
 
-						if(typeof(redo)==='function') {
-							redoStack.push({
-								fn 	 : redo,
-								view : this.app.view
-							});
+					if(typeof(redo)==='function') {
+						redoStack.push({
+							fn 	 : redo,
+							view : this.app.view
+						});
 
-								// remove oldest redo operation if redo count > limit
-							if(redoStack.length>this.limit) {
-								redoStack.shift();
-							}
-
-							notifyCanPropertyChanges();
+							// remove oldest redo operation if redo count > limit
+						if(redoStack.length>this.limit) {
+							redoStack.shift();
 						}
-					} else {
-						this[PROPERTY_UNDO_STACK] = [];
-						this[PROPERTY_REDO_STACK] = [];
-					}
 
-					return redo;
-				},
-				ex=>Promise.reject(ex)
-			);
+						notifyCanPropertyChanges();
+					}
+				} else {
+					this[PROPERTY_UNDO_STACK] = [];
+					this[PROPERTY_REDO_STACK] = [];
+				}
+
+				this[UNDOREDO_OPERATION_IN_PROGRESS]=false;
+				return redo;
+			},
+			ex=>{
+				this[UNDOREDO_OPERATION_IN_PROGRESS]=false;
+				return Promise.reject(ex);
+			});
 		});
 	}
 
 	redo() {
 		this.assert(this.canRedo, 'redo is disabled (canRedo===false)');
+
+		this[UNDOREDO_OPERATION_IN_PROGRESS]=true;
 		return _when.call(this, ()=>{
 			let undoStack = this[PROPERTY_UNDO_STACK],
 					redoStack = this[PROPERTY_REDO_STACK]
@@ -287,36 +298,38 @@ export default class History extends Base {
 				}
 			});
 
-			return redoResult.then(
-				undo=>{
-					if(this.limit!==0) {
-						let notifyCanPropertyChanges = _trackCanProperties.call(this);
+			return redoResult.then(undo=>{
+				if(this.limit!==0) {
+					let notifyCanPropertyChanges = _trackCanProperties.call(this);
 
-							// remove operation from redo stack
-						redoStack.pop();
+						// remove operation from redo stack
+					redoStack.pop();
 
-						if(typeof(undo)==='function') {
-							undoStack.push({
-								fn 	 : undo,
-								view : this.app.view
-							});
+					if(typeof(undo)==='function') {
+						undoStack.push({
+							fn 	 : undo,
+							view : this.app.view
+						});
 
-								// remove oldest undo operation if undo count > limit
-							if(undoStack.length>this.limit) {
-								undoStack.shift();
-							}
-						} else {
-							this[PROPERTY_UNDO_STACK] = [];
-							this[PROPERTY_REDO_STACK] = [];
+							// remove oldest undo operation if undo count > limit
+						if(undoStack.length>this.limit) {
+							undoStack.shift();
 						}
-
-						notifyCanPropertyChanges();
+					} else {
+						this[PROPERTY_UNDO_STACK] = [];
+						this[PROPERTY_REDO_STACK] = [];
 					}
 
-					return undo;
-				},
-				ex=>Promise.reject(ex)
-			);
+					notifyCanPropertyChanges();
+				}
+
+				this[UNDOREDO_OPERATION_IN_PROGRESS]=false;
+				return undo;
+			},
+			ex=>{
+				this[UNDOREDO_OPERATION_IN_PROGRESS]=false;
+				Promise.reject(ex)
+			});
 		});
 	}
 

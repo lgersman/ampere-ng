@@ -4,8 +4,12 @@ Diary.logger('transition').info( "loaded");
 import Base from "./base";
 import Constants from "./constants";
 
-const defaultTransaction = (transition,...args)=>{},
-			defaultDisabled = transition=>false
+const defaultTransaction = (transition,...args)=>{
+		let undo, redo=()=>undo;
+
+		return (undo=()=>redo);
+	},
+	defaultDisabled = transition=>false
 ;
 
 function value2Function(value) {

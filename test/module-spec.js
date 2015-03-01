@@ -34,7 +34,7 @@ describe("Module", function () {
 			createModule('mymodule', (module, createState)=>{
 				expect(module.options[Ampere.NAME]).toEqual(module.name);
 					// namespace===[domain.name].[module.name] for domain modules
-				expect(module.options[Ampere.NAMESPACE]).toEqual( `Ampere.[default].${module.name}`);
+				expect(module.options[Ampere.NAMESPACE]).toEqual( `["Ampere"].[default].[${JSON.stringify(module.name)}]`);
 				done();
 			});
 		});

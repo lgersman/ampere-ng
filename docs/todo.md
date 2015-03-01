@@ -1,7 +1,3 @@
-* update dependencies
-
-* update polymer
-
 * app.ui tests
 
 * port wrapOperation from app.js to polymer app.js
@@ -15,8 +11,6 @@
 * progress anbindung
 
 * collect unhandled exceptions : https://github.com/occ/TraceKit
-
-* compile webcomponents with 6to5 : http://6to5.github.io/
 
 # example apps
 

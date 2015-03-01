@@ -23,8 +23,8 @@ describe("Base", function () {
 		let mock = new Mock('bar', undefined, parent.options);
 
 		expect(mock.name).toEqual( 'bar');
-		expect(parent.options[Ampere.NAMESPACE]).toEqual( 'foo');
-		expect(mock.options[Ampere.NAMESPACE]).toEqual( 'foo.bar');
+		expect(parent.options[Ampere.NAMESPACE]).toEqual( '["foo"]');
+		expect(mock.options[Ampere.NAMESPACE]).toEqual( '["foo"].["bar"]');
 	});
 
 	it("assert()", ()=>{

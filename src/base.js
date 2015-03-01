@@ -20,7 +20,7 @@ Diary.logger('base').info( "loaded");
 export default class Base {
 	constructor(name:string, type:string, parentOptions:Object=null) {
 		let namespace = parentOptions && parentOptions[Constants.NAMESPACE];
-		namespace = namespace ? `${namespace}.${name || '[default]'}` : name || '[default]';
+		namespace = namespace ? `${namespace}.[${name!=Constants.DEFAULT ? JSON.stringify(name) : 'default'}]` : `[${name!=Constants.DEFAULT ? JSON.stringify(name) : 'default'}]`;
 
 		Object.defineProperties(this, {
 			'options' : {
