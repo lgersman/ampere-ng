@@ -2,7 +2,7 @@
   * Advanced tips for using gulp.js : https://medium.com/@webprolific/getting-gulpy-a2010c13d3d5
   */
 
-const	gulp        = require('gulp'),
+const gulp        = require('gulp'),
       del      = require('del'),
       es          = require('event-stream'),
       shell       = require('gulp-shell'),
