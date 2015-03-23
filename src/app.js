@@ -66,7 +66,7 @@ function defaultExecutor(transition:Transition,setView:Function,...params) {
     // execute redo operation
   promise = promise.then(
     redo=>{
-      return wrapOperation(redo, transition.view, setView)();
+      return wrapOperation(redo, transition.target, setView)();
     }
   );
 
@@ -126,7 +126,7 @@ export default class App extends Base {
           _executor=function(transition:Transition, ...params) {
               // assert transition to execute is part of current state's transitions
             this.assert(
-              [for(key of Object.keys(this.view.state.transitions)) this.view.state.transitions[key]].indexOf(transition)!==-1
+              [for(key of Object.keys(this.view.transitions)) this.view.transitions[key]].indexOf(transition)!==-1
               || ([for(key of Object.keys(this.view.state.module.transitions)) this.view.state.module.transitions[key]].indexOf(transition)!==-1),
               ()=>`execute() : transition(=${transition && transition.name ? transition.name : transition}) is not part of current state(=${this.view.state.name}) or module(=${this.view.state.module.name})`
             );
@@ -164,7 +164,7 @@ export default class App extends Base {
     });
 
     let _cb = app=>{
-      let retval = cb(app);
+      let val = cb(app);
 
       Object.defineProperties(this, {
         'history'    : {
@@ -173,11 +173,11 @@ export default class App extends Base {
         }
       });
 
-      return retval;
+      return val;
     };
 
     let onReady = ()=>Promise.all([
-        // app.promise is fullfilled when promise of callback, module, all states and view
+        // app.promise is fullfilled when promise of callback, module, all states, views and transitions
         // are resolved
       new Promise((resolve,reject)=>{
         try {
@@ -188,7 +188,23 @@ export default class App extends Base {
       }),
       view.state.module.domain.promise,
       view.state.module.promise,
-      ...Object.keys(view.state.module.states).map(name=>view.state.module.states[name].promise),
+      ...Object.keys(view.state.module.transitions).map(name=>view.state.module.transitions[name].promise),
+        // collect promises of states, their views and the transitions of the views
+      ...Object.keys(view.state.module.states).reduce((array, stateName)=>{
+        const state = view.state.module.states[stateName];
+        array.push(
+          state.promise,
+          ...Object.keys(state.views).reduce((array, viewName)=>{
+            const view = state.views[viewName];
+            array.push(
+              view.promise,
+              ...Object.keys(view.transitions).map(transitionName=>view.transitions[transitionName].promise)
+            );
+            return array;
+          }, [])
+        );
+        return array;
+      }, []),
       view.promise
     ]).then((...args)=>{
       this.log( "app is ready(arguments=" + JSON.stringify(args) + ')');

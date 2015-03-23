@@ -2,7 +2,6 @@ import Ampere from "../src/ampere";
 import App from "../src/app";
 import Transition from "../src/transition";
 import Base from "../src/base";
-import util from "./util";
 import {spawn} from "../src/util";
 import Constants from "../src/constants";
 
@@ -10,10 +9,10 @@ describe("App", function () {
   describe( "property promise", ()=>{
     describe("resolves automatically when", ()=>{
       it( "no constructor callback is given", done=>{
-        let domain = Ampere.domain(null, (domain, createModule)=>
-          createModule(null, (module, createState)=>
-            createState(null, (state, createView, createTransition)=>
-              createView(null, view=>util.createMockTemplate(view, ''))
+        let domain = Ampere.domain(null, domain=>
+          domain.createModule(null, module=>
+            module.createState(null, state=>
+              state.createView(null, view=>view.createTemplate('mytemplate'))
             )
           )
         );
@@ -23,27 +22,25 @@ describe("App", function () {
       });
 
       it( "constructor callback returns not-a-promise", done=>{
-        let domain = Ampere.domain(null, (domain, createModule)=>
-          createModule(null, (module, createState)=>
-            createState(null, (state, createView, createTransition)=>
-              createView(null, view=>util.createMockTemplate(view, ''))
+        let domain = Ampere.domain(null, domain=>
+          domain.createModule(null, module=>
+            module.createState(null, state=>
+              state.createView(null, view=>view.createTemplate('mytemplate'))
             )
           )
         );
 
         let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT], (app)=>"foo");
         app.promise.then(cb_retval=>{
-          expect( cb_retval).toBe( "foo");
+          expect(cb_retval).toBe( "foo");
           done();
         });
       });
 
-      it( "constructor callback returns a resolved promise", done=>{
-        let domain = Ampere.domain(null, (domain, createModule)=>
-          createModule(null, (module, createState)=>
-            createState(null, (state, createView, createTransition)=>
-              createView(null, view=>util.createMockTemplate(view, ''))
-            )
+      it("constructor callback returns a resolved promise", done=>{
+        let domain = Ampere.domain(null, domain=>
+          domain.createModule(null, module=>
+            module.createState(null, state=>state.createView(null, view=>view.createTemplate('mytemplate')))
           )
         );
 
@@ -53,34 +50,14 @@ describe("App", function () {
           done();
         });
       });
-
-      it( "any other than the constructor-argument view rejects",(done)=>{
-        let domain = Ampere.domain(null, (domain, createModule)=>{
-          createModule(null, (module, createState)=>{
-            createState(null, (state, createView, createTransition)=>{
-              createView(null, view=>{
-                util.createMockTemplate(view, '');
-              });
-
-              createView('invalid', view=>{
-                util.createMockTemplate(view, '');
-                throw new Error( "foo");
-              });
-            });
-          })
-        });
-
-        let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT]);
-        app.promise.then(done)
-      });
     });
 
     describe("rejects automatically when", ()=>{
       it( "domain.promise rejects",(done)=>{
-        let domain = Ampere.domain(null, (domain, createModule)=>{
-          createModule(null, (module, createState)=>{
-            createState(null, (state, createView, createTransition)=>
-              createView(null, view=>util.createMockTemplate(view, ''))
+        let domain = Ampere.domain(null, domain=>{
+          domain.createModule(null, module=>{
+            module.createState(null, state=>
+              state.createView(null, view=>view.createTemplate('mytemplate'))
             );
           })
           throw new Error( "foo");
@@ -93,10 +70,10 @@ describe("App", function () {
       });
 
       it( "module.promise rejects",(done)=>{
-        let domain = Ampere.domain(null, (domain, createModule)=>{
-          createModule(null, (module, createState)=>{
-            createState(null, (state, createView, createTransition)=>
-              createView(null, view=>util.createMockTemplate(view, ''))
+        let domain = Ampere.domain(null, domain=>{
+          domain.createModule(null, module=>{
+            module.createState(null, state=>
+              state.createView(null, view=>view.createTemplate('mytemplate'))
             );
 
             throw new Error( "foo");
@@ -111,14 +88,14 @@ describe("App", function () {
       });
 
       it( "one of the module states rejects or the view argument rejects",(done)=>{
-        let domain = Ampere.domain(null, (domain, createModule)=>{
-          createModule(null, (module, createState)=>{
-            createState(null, (state, createView, createTransition)=>{
-              createView(null, view=>util.createMockTemplate(view, ''));
+        let domain = Ampere.domain(null, domain=>{
+          domain.createModule(null, module=>{
+            module.createState(null, state=>{
+              state.createView(null, view=>view.createTemplate('mytemplate'));
             });
 
-            createState('rejected', (state, createView, createTransition)=>{
-              createView(null, view=>util.createMockTemplate(view, ''));
+            module.createState('rejected', state=>{
+              state.createView(null, view=>view.createTemplate('mytemplate'));
               throw new Error( "foo");
             });
           })
@@ -131,17 +108,54 @@ describe("App", function () {
         })
       });
 
-      it( "view constructor-argument rejects",(done)=>{
-        let domain = Ampere.domain(null, (domain, createModule)=>{
-          createModule(null, (module, createState)=>{
-            createState(null, (state, createView, createTransition)=>{
-              createView(null, view=>{
-                util.createMockTemplate(view, '');
+      it( "view constructor callback rejects",(done)=>{
+        let domain = Ampere.domain(null, domain=>{
+          domain.createModule(null, module=>{
+            module.createState(null, state=>{
+              state.createView(null, view=>{
+                view.createTemplate('mytemplate');
                 throw new Error("foo");
               });
 
-              createView('valid', view=>{
-                util.createMockTemplate(view, '');
+              state.createView('valid', view=>view.createTemplate('mytemplate'));
+            });
+          })
+        });
+
+        let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT]);
+        app.promise.catch(ex=>{
+          expect(ex.message).toBe( "foo");
+          done();
+        });
+      });
+
+      it( "a module transition rejects",(done)=>{
+        let domain = Ampere.domain(null, domain=>{
+          domain.createModule(null, module=>{
+            let view;
+            module.createState(null, state=>{
+              view = state.createView(null, view=>view.createTemplate);
+            });
+
+            module.createTransition(null, transition=>{throw new Error("foo");}, view);
+          })
+        });
+
+        let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT]);
+        app.promise.catch(ex=>{
+          expect(ex.message).toBe( "foo");
+          done();
+        });
+      });
+
+      it( "a view transition rejects",(done)=>{
+        let domain = Ampere.domain(null, domain=>{
+          domain.createModule(null, module=>{
+            module.createState(null, state=>{
+              state.createView(null, view=>{
+                view.createTemplate('mytemplate');
+
+                view.createTransition(null, transition=>{throw new Error("foo");});
               });
             });
           })
@@ -149,28 +163,25 @@ describe("App", function () {
 
         let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT]);
         app.promise.catch(ex=>{
-          expect( ex.message).toBe( "foo");
+          expect(ex.message).toBe( "foo");
           done();
-        })
+        });
       });
+
     });
   });
 
   describe("execute(transition)", ()=>{
     function createMockApp(transitionCb:Function=()=>{}) {
       let view;
-      Ampere.domain(null, (domain, createModule)=>{
-        createModule(null, (module, createState)=>{
-          createState(null, (state, createView, createTransition)=>{
-            view = createView(null, view=>{
-              util.createMockTemplate(view, '');
-            });
+      Ampere.domain(null, domain=>{
+        domain.createModule(null, module=>{
+          module.createState(null, state=>{
+            view = state.createView(null, view=>{
+              view.createTemplate('mytemplate');
 
-            let target = createView('target', view=>{
-              util.createMockTemplate(view, '');
+              view.createTransition(null,transitionCb);
             });
-
-            createTransition(null,transitionCb,target);
           });
         })
       });
@@ -178,23 +189,24 @@ describe("App", function () {
       return Ampere.app(view);
     }
 
-    it("accepts only a transition from view.state.transitions as argument", done=>{
+    it("accepts only a transition from view.transitions as argument", done=>{
       let app = createMockApp(),
           otherStatesTransition
       ;
-      Ampere.domain(null, (domain, createModule)=>{
-        createModule(null, (module, createState)=>{
-          createState(null, (state, createView, createTransition)=>{
-            view = createView(null, view=>{
-              util.createMockTemplate(view, '');
+      Ampere.domain(null, domain=>{
+        domain.createModule(null, module=>{
+          module.createState(null, state=>{
+            view = state.createView(null, view=>{
+              view.createTemplate('mytemplate');
+
+              otherStatesTransition = view.createTransition(null,transitionCb,target);
             });
-            otherStatesTransition = createTransition(null,transitionCb,target);
           });
         })
       });
 
         // transition of current state should be accepted
-      expect(()=>app.execute(app.view.state.transitions[Constants.DEFAULT])).not.toThrow();
+      expect(()=>app.execute(app.view.transitions[Constants.DEFAULT])).not.toThrow();
         // transition of other state should be rejected
       expect(()=>app.execute(otherStatesTransition)).toThrow();
 
@@ -214,8 +226,7 @@ describe("App", function () {
         try {
           transition.disabled = DISABLED_MESSAGE;
 
-          yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
-          debugger
+          yield app.execute(app.view.transitions[Constants.DEFAULT]);
           throw new Error("should never execute");
         } catch(ex) {
           expect(ex.message.includes(DISABLED_MESSAGE)).toBe(true);
@@ -224,7 +235,7 @@ describe("App", function () {
           // disabled by rejected promise
         try {
           transition.disabled = Promise.reject(new Error(DISABLED_MESSAGE));
-          yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
+          yield app.execute(app.view.transitions[Constants.DEFAULT]);
           throw new Error("should never execute");
         } catch(ex) {
           expect(ex.message.includes(DISABLED_MESSAGE)).toBe(true);
@@ -235,8 +246,7 @@ describe("App", function () {
           transition.disabled = new Promise((resume,reject)=>{
             setTimeout(()=>reject(new Error(DISABLED_MESSAGE)),500)
           });
-
-          yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
+          yield app.execute(app.view.transitions[Constants.DEFAULT]);
           throw new Error("should never execute");
         } catch(ex) {
           expect(ex.message.includes(DISABLED_MESSAGE)).toBe(true);
@@ -257,11 +267,11 @@ describe("App", function () {
       app.execute = (transition,setView,...params)=>received_params=params;
 
       spawn(function*() {
-        yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
+        yield app.execute(app.view.transitions[Constants.DEFAULT]);
         expect(received_params).toEqual([]);
 
         const EXPECTED = ['foo', 'bar'];
-        yield app.execute(app.view.state.transitions[Constants.DEFAULT], EXPECTED[0], EXPECTED[1]);
+        yield app.execute(app.view.transitions[Constants.DEFAULT], EXPECTED[0], EXPECTED[1]);
         expect(received_params).toEqual(EXPECTED);
 
         done();
@@ -284,11 +294,11 @@ describe("App", function () {
             return RESULT;
           };
 
-          yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
+          yield app.execute(app.view.transitions[Constants.DEFAULT]);
           expect(received_params).toEqual([]);
 
           const EXPECTED = ['foo', 'bar'];
-          yield app.execute(app.view.state.transitions[Constants.DEFAULT], EXPECTED[0], EXPECTED[1]);
+          yield app.execute(app.view.transitions[Constants.DEFAULT], EXPECTED[0], EXPECTED[1]);
           expect(received_params).toEqual(EXPECTED);
 
           done();
@@ -309,7 +319,7 @@ describe("App", function () {
           };
 
           try {
-            yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
+            yield app.execute(app.view.transitions[Constants.DEFAULT]);
             throw new Error("should never execute");
           } catch(ex) {
             expect(ex.message.includes("Failed to initialize transaction")).toBe(true);
@@ -331,7 +341,7 @@ describe("App", function () {
           transition.transaction = (transition,...params)=>Promise.reject(new Error("Failed to initialize transaction"));
 
           try {
-            yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
+            yield app.execute(app.view.transitions[Constants.DEFAULT]);
             throw new Error("should never execute");
           } catch(ex) {
             expect(ex.message.includes("Failed to initialize transaction")).toBe(true);
@@ -357,7 +367,7 @@ describe("App", function () {
           }
 
           try {
-            yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
+            yield app.execute(app.view.transitions[Constants.DEFAULT]);
             throw new Error("should never execute");
           } catch(ex) {
             expect(ex.message.includes("Failed to initialize transaction")).toBe(true);
@@ -381,7 +391,7 @@ describe("App", function () {
           }
 
           try {
-            yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
+            yield app.execute(app.view.transitions[Constants.DEFAULT]);
             throw new Error("should never execute");
           } catch(ex) {
             expect(ex.message.includes("Failed to initialize transaction")).toBe(true);
@@ -402,7 +412,7 @@ describe("App", function () {
         app.execute = (transition,setView,...params)=>"result";
 
         spawn(function*() {
-          let result = yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
+          let result = yield app.execute(app.view.transitions[Constants.DEFAULT]);
           expect(result).toBe("result");
 
           done();
@@ -416,7 +426,7 @@ describe("App", function () {
 
         spawn(function*() {
           try {
-            yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
+            yield app.execute(app.view.transitions[Constants.DEFAULT]);
             throw new Error("should never happen");
           } catch(ex) {
             expect(ex.message.includes("wow - problem occurred")).toBe(true);
@@ -431,7 +441,7 @@ describe("App", function () {
 
         spawn(function*() {
           try {
-            yield app.execute(app.view.state.transitions[Constants.DEFAULT]);
+            yield app.execute(app.view.transitions[Constants.DEFAULT]);
             throw new Error("should never happen");
           } catch(ex) {
             expect(ex.message.includes("wow - problem occurred")).toBe(true);
@@ -446,24 +456,22 @@ describe("App", function () {
   describe("history", ()=>{
     let createMockModuleView = function(options={}) {
       let view;
-      Ampere.domain(null, (domain, createModule)=>{
-        createModule(null, (module, createState)=>{
+      Ampere.domain(null, domain=>{
+        domain.createModule(null, module=>{
           const symbols = Object.getOwnPropertySymbols(options);
           for(let key in symbols) {
             let symbol = symbols[key];
             module.options[symbol]=options[symbol];
           }
 
-          createState(null, (state, createView, createTransition)=>{
-            view = createView(null, view=>{
-              util.createMockTemplate(view, '');
-            });
+          module.createState(null, state=>{
+            let target = state.createView('target', view=>view.createTemplate);
 
-            createView('target', view=>{
-              util.createMockTemplate(view, '');
-            });
+            view = state.createView(null, view=>{
+              view.createTemplate('mytemplate');
 
-            createTransition(null,(transition)=>{},view);
+              view.createTransition(null,transition=>{},target);
+            });
           });
         })
       });
@@ -521,64 +529,63 @@ describe("App", function () {
         let createMockModuleView = function() {
           let view;
 
-          Ampere.domain(null, (domain, createModule)=>{
-            createModule(null, (module, createState)=>{
-              createState('inc', (state, createView, createTransition)=>{
+          Ampere.domain(null, domain=>{
+            domain.createModule(null, module=>{
+              module.createState('inc', state=>{
                 state.counter=0,
                 state.params = [];
 
-                view = createView(null, view=>{
-                  util.createMockTemplate(view, '');
-                });
+                view = state.createView(null, view=>{
+                  view.createTemplate('mytemplate');
 
-                createTransition('immediate_immediate',(transition)=>{
-                  transition.transaction = (transition, ...params)=>{
-                    state.counter++;
-                    return ()=>{
+                  view.createTransition('immediate_immediate',transition=>{
+                    transition.transaction = (transition, ...params)=>{
                       state.counter++;
-                      state.params=params;
-                    };
-                  };
-                });
-
-                createTransition('immediate_promise',(transition)=>{
-                  transition.transaction = (transition, ...params)=>{
-                    state.counter++;
-                    return new Promise(resolve=>{
-                      state.counter++;
-                      state.params=params;
-                      resolve();
-                    });
-                  };
-                });
-
-                createTransition('promise_immediate',(transition)=>{
-                  transition.transaction = (transition, ...params)=>{
-                    return new Promise(resolve=>{
-                      state.counter++;
-                      resolve(()=>{
+                      return ()=>{
                         state.counter++;
                         state.params=params;
-                      });
-                    });
-                  };
-                });
+                      };
+                    };
+                  });
 
-                createTransition('promise_promise',(transition)=>{
-                  transition.transaction = (transition, ...params)=>{
-                    return new Promise(resolve=>{
+                  view.createTransition('immediate_promise',transition=>{
+                    transition.transaction = (transition, ...params)=>{
                       state.counter++;
-                      resolve(
-                        new Promise(resolve=>{
+                      return new Promise(resolve=>{
+                        state.counter++;
+                        state.params=params;
+                        resolve();
+                      });
+                    };
+                  });
+
+                  view.createTransition('promise_immediate',transition=>{
+                    transition.transaction = (transition, ...params)=>{
+                      return new Promise(resolve=>{
+                        state.counter++;
+                        resolve(()=>{
                           state.counter++;
                           state.params=params;
-                          resolve();
-                        })
-                      );
-                    });
-                  }
-                });
+                        });
+                      });
+                    };
+                  });
 
+                  view.createTransition('promise_promise',transition=>{
+                    transition.transaction = (transition, ...params)=>{
+                      return new Promise(resolve=>{
+                        state.counter++;
+                        resolve(
+                          new Promise(resolve=>{
+                            state.counter++;
+                            state.params=params;
+                            resolve();
+                          })
+                        );
+                      });
+                    }
+                  });
+                });
               });
             });
           });
@@ -591,7 +598,7 @@ describe("App", function () {
         it("immediate_immediate", done=>{
           let app = Ampere.app(createMockModuleView());
 
-          app.execute(app.view.state.transitions.immediate_immediate, ...PARAMS).then(()=>{
+          app.execute(app.view.transitions.immediate_immediate, ...PARAMS).then(()=>{
             expect(app.view.state.counter).toBe(2);
             expect(app.view.state.params).toEqual(PARAMS);
             done();
@@ -601,7 +608,7 @@ describe("App", function () {
         it("immediate_promise", done=>{
           let app = Ampere.app(createMockModuleView());
 
-          app.execute(app.view.state.transitions.immediate_promise, ...PARAMS).then(()=>{
+          app.execute(app.view.transitions.immediate_promise, ...PARAMS).then(()=>{
             expect(app.view.state.counter).toBe(2);
             expect(app.view.state.params).toEqual(PARAMS);
             done();
@@ -611,7 +618,7 @@ describe("App", function () {
         it("promise_immediate", done=>{
           let app = Ampere.app(createMockModuleView());
 
-          app.execute(app.view.state.transitions.promise_immediate, ...PARAMS).then(()=>{
+          app.execute(app.view.transitions.promise_immediate, ...PARAMS).then(()=>{
             expect(app.view.state.counter).toBe(2);
             expect(app.view.state.params).toEqual(PARAMS);
             done();
@@ -621,7 +628,7 @@ describe("App", function () {
         it("promise_promise", done=>{
           let app = Ampere.app(createMockModuleView());
 
-          app.execute(app.view.state.transitions.promise_promise, ...PARAMS).then(()=>{
+          app.execute(app.view.transitions.promise_promise, ...PARAMS).then(()=>{
             expect(app.view.state.counter).toBe(2);
             expect(app.view.state.params).toEqual(PARAMS);
             done();
@@ -633,27 +640,26 @@ describe("App", function () {
         let createMockModuleView = function() {
           let view;
 
-          Ampere.domain(null, (domain, createModule)=>{
-            createModule(null, (module, createState)=>{
-              createState('inc', (state, createView, createTransition)=>{
-                view = createView(null, view=>{
-                  util.createMockTemplate(view, '');
-                });
+          Ampere.domain(null, domain=>{
+            domain.createModule(null, module=>{
+              module.createState('inc', state=>{
+                view = state.createView(null, view=>{
+                  view.createTemplate('mytemplate');
 
-                createTransition('immediate',(transition)=>{
-                  transition.transaction = (transition, ...params)=>{
-                    return params;
-                  };
-                });
+                  view.createTransition('immediate',transition=>{
+                    transition.transaction = (transition, ...params)=>{
+                      return params;
+                    };
+                  });
 
-                createTransition('promise',(transition)=>{
-                  transition.transaction = (transition, ...params)=>{
-                    return new Promise(resolve=>{
-                      resolve(params);
-                    });
-                  };
+                  view.createTransition('promise',transition=>{
+                    transition.transaction = (transition, ...params)=>{
+                      return new Promise(resolve=>{
+                        resolve(params);
+                      });
+                    };
+                  });
                 });
-
               });
             });
           });
@@ -666,7 +672,7 @@ describe("App", function () {
         it("immediate", done=>{
           let app = Ampere.app(createMockModuleView());
 
-          app.execute(app.view.state.transitions.immediate, ...PARAMS).then(params=>{
+          app.execute(app.view.transitions.immediate, ...PARAMS).then(params=>{
             expect(params).toEqual(PARAMS);
             done();
           });
@@ -675,7 +681,7 @@ describe("App", function () {
         it("promise", done=>{
           let app = Ampere.app(createMockModuleView());
 
-          app.execute(app.view.state.transitions.promise, ...PARAMS).then(params=>{
+          app.execute(app.view.transitions.promise, ...PARAMS).then(params=>{
             expect(params).toEqual(PARAMS);
             done();
           });
@@ -688,27 +694,26 @@ describe("App", function () {
         let createMockModuleView = function() {
           let view;
 
-          Ampere.domain(null, (domain, createModule)=>{
-            createModule(null, (module, createState)=>{
-              createState('inc', (state, createView, createTransition)=>{
-                view = createView(null, view=>{
-                  util.createMockTemplate(view, '');
-                });
+          Ampere.domain(null, domain=>{
+            domain.createModule(null, module=>{
+              module.createState('inc', state=>{
+                view = state.createView(null, view=>{
+                  view.createTemplate('mytemplate');
 
-                createTransition('immediate',(transition)=>{
-                  transition.transaction = (transition, ...params)=>{
-                    throw new Error(ERROR);
-                  };
-                });
+                  view.createTransition('immediate',transition=>{
+                    transition.transaction = (transition, ...params)=>{
+                      throw new Error(ERROR);
+                    };
+                  });
 
-                createTransition('promise',(transition)=>{
-                  transition.transaction = (transition, ...params)=>{
-                    return new Promise((resolve, reject)=>{
-                      reject(new Error(ERROR));
-                    });
-                  };
+                  view.createTransition('promise',transition=>{
+                    transition.transaction = (transition, ...params)=>{
+                      return new Promise((resolve, reject)=>{
+                        reject(new Error(ERROR));
+                      });
+                    };
+                  });
                 });
-
               });
             });
           });
@@ -718,7 +723,7 @@ describe("App", function () {
 
         it("immediate", done=>{
           let app = Ampere.app(createMockModuleView());
-          app.execute(app.view.state.transitions.immediate).catch(ex=>{
+          app.execute(app.view.transitions.immediate).catch(ex=>{
             expect(ex.message.indexOf(ERROR)!==-1).toBe(true);
             done();
           });
@@ -727,7 +732,7 @@ describe("App", function () {
         it("promise", done=>{
           let app = Ampere.app(createMockModuleView());
 
-          app.execute(app.view.state.transitions.promise).catch(ex=>{
+          app.execute(app.view.transitions.promise).catch(ex=>{
             expect(ex.message.indexOf(ERROR)!==-1).toBe(true);
             done();
           });
@@ -740,29 +745,29 @@ describe("App", function () {
         let createMockModuleView = function() {
           let view;
 
-          Ampere.domain(null, (domain, createModule)=>{
-            createModule(null, (module, createState)=>{
-              createState('inc', (state, createView, createTransition)=>{
-                view = createView(null, view=>{
-                  util.createMockTemplate(view, '');
-                });
+          Ampere.domain(null, domain=>{
+            domain.createModule(null, module=>{
+              module.createState('inc', state=>{
+                view = state.createView(null, view=>{
+                  view.createTemplate('mytemplate');
 
-                createTransition('immediate',(transition)=>{
-                  transition.transaction = (transition, ...params)=>{
-                    return ()=>{
-                      throw new Error(ERROR)
+                  view.createTransition('immediate',transition=>{
+                    transition.transaction = (transition, ...params)=>{
+                      return ()=>{
+                        throw new Error(ERROR)
+                      };
                     };
-                  };
-                });
+                  });
 
-                createTransition('promise',(transition)=>{
-                  transition.transaction = (transition, ...params)=>{
-                    return ()=>{
-                      return new Promise((resolve, reject)=>{
-                        reject(new Error(ERROR));
-                      });
+                  view.createTransition('promise',transition=>{
+                    transition.transaction = (transition, ...params)=>{
+                      return ()=>{
+                        return new Promise((resolve, reject)=>{
+                          reject(new Error(ERROR));
+                        });
+                      };
                     };
-                  };
+                  });
                 });
               });
             });
@@ -773,7 +778,7 @@ describe("App", function () {
 
         it("immediate", done=>{
           let app = Ampere.app(createMockModuleView());
-          app.execute(app.view.state.transitions.immediate).catch(ex=>{
+          app.execute(app.view.transitions.immediate).catch(ex=>{
             expect(ex.message.indexOf(ERROR)!==-1).toBe(true);
             done();
           });
@@ -782,7 +787,7 @@ describe("App", function () {
         it("promise", done=>{
           let app = Ampere.app(createMockModuleView());
 
-          app.execute(app.view.state.transitions.promise).catch(ex=>{
+          app.execute(app.view.transitions.promise).catch(ex=>{
             expect(ex.message.indexOf(ERROR)!==-1).toBe(true);
             done();
           });
@@ -793,31 +798,30 @@ describe("App", function () {
         let createMockModuleView = function() {
           let view;
 
-          Ampere.domain(null, (domain, createModule)=>{
-            createModule(null, (module, createState)=>{
-              createState('inc', (state, createView, createTransition)=>{
-                view = createView(null, view=>{
-                  util.createMockTemplate(view, '');
-                });
+          Ampere.domain(null, domain=>{
+            domain.createModule(null, module=>{
+              module.createState('inc', state=>{
+                view = state.createView(null, view=>{
+                  view.createTemplate('mytemplate');
 
-                createTransition('immediate_immediate',(transition)=>{
-                  transition.transaction = (transition, ...params)=>()=>params[0];
-                });
+                  view.createTransition('immediate_immediate',transition=>{
+                    transition.transaction = (transition, ...params)=>()=>params[0];
+                  });
 
-                createTransition('immediate_promise',(transition)=>{
-                  transition.transaction = (transition, ...params)=>new Promise(resolve=>{
-                    resolve(()=>params[0]);
+                  view.createTransition('immediate_promise',transition=>{
+                    transition.transaction = (transition, ...params)=>new Promise(resolve=>{
+                      resolve(()=>params[0]);
+                    });
+                  });
+
+                  view.createTransition('promise_immediate',transition=>{
+                    transition.transaction = (transition, ...params)=>new Promise(resolve=>resolve(()=>params[0]));
+                  });
+
+                  view.createTransition('promise_promise',transition=>{
+                    transition.transaction = (transition, ...params)=>new Promise(resolve=>resolve(new Promise(resolve=>resolve(()=>params[0]))));
                   });
                 });
-
-                createTransition('promise_immediate',(transition)=>{
-                  transition.transaction = (transition, ...params)=>new Promise(resolve=>resolve(()=>params[0]));
-                });
-
-                createTransition('promise_promise',(transition)=>{
-                  transition.transaction = (transition, ...params)=>new Promise(resolve=>resolve(new Promise(resolve=>resolve(()=>params[0]))));
-                });
-
               });
             });
           });
@@ -831,7 +835,7 @@ describe("App", function () {
         it("immediate_immediate", done=>{
           let app = Ampere.app(createMockModuleView());
 
-          app.execute(app.view.state.transitions.immediate_immediate, ...PARAMS).then(undo=>{
+          app.execute(app.view.transitions.immediate_immediate, ...PARAMS).then(undo=>{
             undoCalled = false
             undo().then(result=>{
               expect(undoCalled).toBe(true);
@@ -842,7 +846,7 @@ describe("App", function () {
 
         it("immediate_promise", done=>{
           let app = Ampere.app(createMockModuleView());
-          app.execute(app.view.state.transitions.immediate_promise, ...PARAMS).then(undo=>{
+          app.execute(app.view.transitions.immediate_promise, ...PARAMS).then(undo=>{
             undoCalled = false
             undo().then(result=>{
               expect(undoCalled).toBe(true);
@@ -854,7 +858,7 @@ describe("App", function () {
         it("promise_immediate", done=>{
           let app = Ampere.app(createMockModuleView());
 
-          app.execute(app.view.state.transitions.promise_immediate, ...PARAMS).then(undo=>{
+          app.execute(app.view.transitions.promise_immediate, ...PARAMS).then(undo=>{
             undoCalled = false
             undo().then(result=>{
               expect(undoCalled).toBe(true);
@@ -866,7 +870,7 @@ describe("App", function () {
         it("promise_promise", done=>{
           let app = Ampere.app(createMockModuleView());
 
-          app.execute(app.view.state.transitions.promise_promise, ...PARAMS).then(undo=>{
+          app.execute(app.view.transitions.promise_promise, ...PARAMS).then(undo=>{
             undoCalled = false
             undo().then(result=>{
               expect(undoCalled).toBe(true);
@@ -874,7 +878,6 @@ describe("App", function () {
             });
           });
         });
-
       });
     });
 
@@ -887,31 +890,58 @@ describe("App", function () {
         let createMockModule = function() {
           let module;
 
-          Ampere.domain(null, (domain, createModule)=>{
-            module = createModule(null, (module, createState)=>{
-              createState('s', (state, createView, createTransition)=>{
+          Ampere.domain(null, domain=>{
+            module = domain.createModule(null, module=>{
+              module.createState('s', state=>{
                 state.value = 'a';
 
-                let b = createView('b', view=>util.createMockTemplate(view, ''));
-                let c = createView('c', view=>util.createMockTemplate(view, ''));
+                let b = state.createView('b', view=>{
+                  view.createTemplate('mytemplate');
 
-                createTransition('concat_b',(transition)=>{
-                  transition.transaction = (transition, ...params)=>{
-                    let value = state.value,
-                    redo = ()=>{
-                      state.value = value + 'b';
-                      return undo;
-                    },
-                    undo = ()=>{
-                      state.value = value;
+                  view.createTransition('concat_b',transition=>{
+                    transition.transaction = (transition, ...params)=>{
+                      let value = state.value,
+                      redo = ()=>{
+                        state.value = value + 'b';
+                        return undo;
+                      },
+                      undo = ()=>{
+                        state.value = value;
+                        return redo;
+                      };
+
                       return redo;
                     };
+                  });
+                });
 
-                    return redo;
-                  };
-                }, b);
+                let c = state.createView('c', view=>{
+                  view=>view.createTemplate('mytemplate');
 
-                createTransition('concat_c',(transition)=>{
+                  view.createTransition('concat_b',transition=>{
+                    transition.transaction = (transition, ...params)=>{
+                      let value = state.value,
+                      redo = ()=>{
+                        state.value = value + 'b';
+                        return undo;
+                      },
+                      undo = ()=>{
+                        state.value = value;
+                        return redo;
+                      };
+
+                      return redo;
+                    };
+                  }, b);
+
+                  view.createTransition('no_redo',transition=>{
+                    transition.transaction = (transition, ...params)=>{
+                      return ()=>{};
+                    };
+                  }, b);
+                });
+
+                b.createTransition('concat_c',transition=>{
                   transition.transaction = (transition, ...params)=>{
                     let value = state.value,
                     redo = ()=>{
@@ -926,12 +956,6 @@ describe("App", function () {
                     return redo;
                   };
                 }, c);
-
-                createTransition('no_redo',(transition)=>{
-                  transition.transaction = (transition, ...params)=>{
-                    return ()=>{};
-                  };
-                }, b);
               });
             });
           });
@@ -953,7 +977,7 @@ describe("App", function () {
           expect(app.view).toBe(app.view.state.views.b);
           expect(app.history.canReset).toBe(false);
 
-          yield app.execute(app.view.state.transitions.concat_b);
+          yield app.execute(app.view.transitions.concat_b);
 
             // undo should be enabled
           expect(app.history.canUndo).toBe(true);
@@ -974,7 +998,7 @@ describe("App", function () {
           expect(app.view.state.value).toEqual('ab');
           expect(app.view).toBe(app.view.state.views.b);
 
-          yield app.execute(app.view.state.transitions.concat_b);
+          yield app.execute(app.view.transitions.concat_b);
           expect(app.view.state.value).toEqual('abb');
 
           yield app.history.undo();
@@ -984,7 +1008,7 @@ describe("App", function () {
           expect(app.history.canReset).toBe(true);
 
           expect(app.view).toBe(app.view.state.views.b);
-          yield app.execute(app.view.state.transitions.concat_c);
+          yield app.execute(app.view.transitions.concat_c);
           expect(app.view.state.value).toEqual('abc');
           expect(app.history.canUndo).toBe(true);
           expect(app.history.canRedo).toBe(false);
@@ -1005,7 +1029,7 @@ describe("App", function () {
           yield app.history.redo();
           expect(app.view.toString()).toBe(app.view.state.views.c.toString());
 
-          yield app.execute(app.view.state.transitions.no_redo);
+          yield app.execute(app.view.transitions.no_redo);
           expect(app.history.canReset).toBe(false);
           expect(app.history.canUndo).toBe(false);
           expect(app.history.canRedo).toBe(false);
@@ -1017,18 +1041,20 @@ describe("App", function () {
         let createMockModuleView = function() {
           let view;
 
-          Ampere.domain(null, (domain, createModule)=>{
-            createModule(null, (module, createState)=>{
-              createState(null, (state, createView, createTransition)=>{
+          Ampere.domain(null, domain=>{
+            domain.createModule(null, module=>{
+              module.createState(null, state=>{
                   // will be used by the tests to control when undo and redo return
                 state.fn = null;
 
-                view = createView(null, view=>util.createMockTemplate(view, ''));
+                view = state.createView(null, view=>{
+                  view.createTemplate('mytemplate');
 
-                createTransition('go',(transition)=>{
-                  transition.transaction = (transition, ...params)=>{
-                    return state.fn();
-                  };
+                  view.createTransition('go',transition=>{
+                    transition.transaction = (transition, ...params)=>{
+                      return state.fn();
+                    };
+                  });
                 });
               });
             });
@@ -1058,7 +1084,7 @@ describe("App", function () {
             setTimeout(finish, 100);
 
               // wait for transaction finished
-            yield app.execute(app.view.state.transitions.go);
+            yield app.execute(app.view.transitions.go);
             expect(app.history.busy).toBe(false);
 
               // ensure thenable is fine
@@ -1111,24 +1137,24 @@ describe("App", function () {
   describe("functor", ()=>{
     let domain;
     beforeEach(()=>{
-      domain = Ampere.domain(null, (domain, createModule)=>
-        createModule(null, (module, createState)=>
-          createState(null, (state, createView, createTransition)=>{
-            createView(null, view=>{
-              util.createMockTemplate(view, '');
+      domain = Ampere.domain(null, domain=>
+        domain.createModule(null, module=>
+          module.createState(null, state=>{
+            state.createView(null, view=>{
+              view.createTemplate('mytemplate');
             });
 
-            createTransition('a', transition=>{
+            view.createTransition('a', transition=>{
               transition.transaction = transition=>{
 
               };
             });
-            createTransition('b', transition=>{
+            view.createTransition('b', transition=>{
               transition.transaction = transition=>{
 
               };
             });
-            createTransition('c', transition=>{
+            view.createTransition('c', transition=>{
               transition.transaction = transition=>{
 
               };

@@ -3,25 +3,6 @@ Diary.logger('domain').info( "loaded");
 import Constants from "./constants";
 import Base from "./base";
 
-  // TODO : 2nd argument should be an arrow function with type annotations but traceur failed to compile it
-function createModule(name, createModule) {
-    // manual type assertion
-  assert.argumentTypes(name, $traceurRuntime.type.string, createModule, Function);
-
-  if(typeof(name)!=='string') {
-    this.log(`createModule() : name argument(='${name}') is not a string -> reset name to Constants.DEFAULT`);
-    name = Constants.DEFAULT;
-  }
-
-  this
-  .assert(()=>!this.modules[name], `module (name='${name}') aleady registered`)
-  .log(`register module '${name}'`);
-
-  this.modules[name] = new Module(this, name, createModule);
-
-  return this.modules[name];
-}
-
 /**
   Domain represents an encapsulated world of Ampere modules.
 
@@ -46,7 +27,26 @@ export default class Domain extends Base {
       }
     });
 
-    this.options[Base._PROMISIFY](cb, createModule.bind(this));
+    this.options[Base._PROMISIFY](cb);
+  }
+
+    // TODO : 2nd argument should be an arrow function with type annotations but traceur failed to compile it
+  createModule(name, createModuleCb) {
+      // manual type assertion
+    assert.argumentTypes(name, $traceurRuntime.type.string, createModuleCb, Function);
+
+    if(typeof(name)!=='string') {
+      this.log(`createModuleCb() : name argument(='${name}') is not a string -> reset name to Constants.DEFAULT`);
+      name = Constants.DEFAULT;
+    }
+
+    this
+    .assert(()=>!this.modules[name], `module (name='${name}') aleady registered`)
+    .log(`register module '${name}'`);
+
+    this.modules[name] = new Module(this, name, createModuleCb);
+
+    return this.modules[name];
   }
 }
 

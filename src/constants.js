@@ -92,6 +92,13 @@ Object.defineProperties(Constants.UI, {
     writable: false
   },
 
+    /**
+    * can be used by ui implementors to keep a reference to a ui widget representing the ampere entity (app, view, etc.)
+    */
+  'PEER'    : {
+    value  : Symbol('AMPERE_UI_PEER'),
+    writable: false
+  }
     /*
     * tells the ui that these view should be rendered on top of another view.
     * a stacked view will be rendered as dialog with the parent view as background.

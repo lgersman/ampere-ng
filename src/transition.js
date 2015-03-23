@@ -17,50 +17,50 @@ function value2Function(value) {
 }
 
 /**
-  Transition is a directed connection to move the current application state to another State.
+  Transition is a directed connection to move the current application view to another View.
 */
 export default class Transition extends Base {
     /**
-      * @param state state or function returning state
+      * @param view view or function returning view
       * @param viewOrCb target view or function returning the target view
     */
-  constructor(state, name:string, cb:Function, viewOrCb) {
+  constructor(view, name:string, cb:Function, targetViewOrCb) {
       // manual type assertion
-    if(state instanceof State) {
-      assert.argumentTypes(state, State, name, $traceurRuntime.type.string, cb, Function, viewOrCb, View);
+    if(view instanceof View) {
+      assert.argumentTypes(view, View, name, $traceurRuntime.type.string, cb, Function, targetViewOrCb, View);
     } else {
-      assert.argumentTypes(state, Module, name, $traceurRuntime.type.string, cb, Function, viewOrCb, viewOrCb instanceof View ? View : Function);
+      assert.argumentTypes(view, Module, name, $traceurRuntime.type.string, cb, Function, targetViewOrCb, targetViewOrCb instanceof View ? View : Function);
     }
 
-    super(name, 'transition', state.options);
+    super(name, 'transition', view.options);
 
-    if(state instanceof State) {
+    if(view instanceof View) {
       Object.defineProperties(this, {
-        'state' : {
-          value     : state,
+        'view' : {
+          value    : view,
           writable : false
         },
       });
-    } else if(state instanceof Module) {
-      let module = state;
+    } else if(view instanceof Module) {
+      let module = view;
       Object.defineProperties(this, {
         'module' : {
           value      : module,
           writable   : false
         },
-        'state' : {
-          get        : ()=>((module.app || {}).view || {}).state,
+        'view' : {
+          get        : ()=>(module.app || {}).view,
           configurable : false
         }
       });
     } else {
-      this.assert( false, '1st argument expected to be a State or Module');
+      this.assert( false, '1st argument expected to be a View or Module');
     }
 
     let _disabled, _transaction;
     Object.defineProperties(this, {
-      'view' : {
-        get      : (viewOrCb instanceof View) ? value2Function(viewOrCb) : viewOrCb,
+      'target' : {
+        get      : (targetViewOrCb instanceof View) ? value2Function(targetViewOrCb) : targetViewOrCb,
         configurable : false
       },
       'disabled' : {
@@ -120,6 +120,5 @@ export default class Transition extends Base {
   }
 }
 
-import State from "./state";
 import View from "./view";
 import Module from "./module";
