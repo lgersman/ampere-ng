@@ -98,7 +98,7 @@ Object.defineProperties(Constants.UI, {
   'PEER'    : {
     value  : Symbol('AMPERE_UI_PEER'),
     writable: false
-  }
+  },
     /*
     * tells the ui that these view should be rendered on top of another view.
     * a stacked view will be rendered as dialog with the parent view as background.
