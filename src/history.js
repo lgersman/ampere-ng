@@ -1,5 +1,5 @@
-import {Diary} from '../lib/diary/diary';
-Diary.logger('history').info( "loaded");
+import Logger from './logger';
+Logger('history').info( "loaded");
 
 import Base from './base';
 import View from './view';

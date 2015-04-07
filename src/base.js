@@ -1,5 +1,5 @@
-import {Diary} from '../lib/diary/diary';
-Diary.logger('base').info( "loaded");
+import Logger from './logger';
+Logger('base').info( "loaded");
 
 // TODO : this should be importable but traceur fails right now
 // fortunately the chained sources helps us out and provide Ampere
@@ -47,8 +47,8 @@ export default class Base {
       }
     });
 
-      // log : function log.info with all attached diary methods returning this
-    let logger = Diary.logger(_getNamespace(this)),
+      // log : function log.info with all attached logger methods returning this
+    let logger = Logger(_getNamespace(this)),
         log = Object.assign((msg)=>logger.info.call(logger, msg) || this, Object.getPrototypeOf(logger), logger)
     ;
 

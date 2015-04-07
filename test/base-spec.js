@@ -1,7 +1,6 @@
 import Base from "../src/base";
 import Ampere from "../src/ampere";
 import Constants from "../src/constants";
-import {Diary} from '../lib/diary/diary';
 
 describe("Base", function () {
   class Mock extends Base {
@@ -127,48 +126,6 @@ describe("Base", function () {
         expect(val).toBe("my error");
         done();
       });
-    });
-  });
-
-  it("log()", ()=>{
-    let reporter = jasmine.createSpyObj('reporter', ['receive']);
-    Diary.reporter(reporter);
-
-    let mock = new Mock();
-    mock.log( "my log");
-    expect(reporter.receive).toHaveBeenCalledWith({
-      level: 'info',
-      group: 'mock:[default]',
-      message: 'my log'
-    });
-
-    let log = mock.options[Ampere.LOG];
-    log.info( "my info");
-    expect(reporter.receive).toHaveBeenCalledWith({
-      level: 'info',
-      group: 'mock:[default]',
-      message: 'my info'
-    });
-
-    log.warn( "my warn");
-    expect(reporter.receive).toHaveBeenCalledWith({
-      level: 'warn',
-      group: 'mock:[default]',
-      message: 'my warn'
-    });
-
-    log.error( "my error");
-    expect(reporter.receive).toHaveBeenCalledWith({
-      level: 'error',
-      group: 'mock:[default]',
-      message: 'my error'
-    });
-
-    log.fatal( "my fatal");
-    expect(reporter.receive).toHaveBeenCalledWith({
-      level: 'fatal',
-      group: 'mock:[default]',
-      message: 'my fatal'
     });
   });
 

@@ -1,5 +1,5 @@
-import {Diary} from '../lib/diary/diary';
-Diary.logger('transition').info( "loaded");
+import Logger from './logger';
+Logger('transition').info( "loaded");
 
 import Base from "./base";
 import Constants from "./constants";

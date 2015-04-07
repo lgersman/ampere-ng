@@ -24,19 +24,6 @@ Ampere stands for
 ````
 npm install
 ````
-
-open ``node_modules/diary/src/diary.js`` and replace
-
-````
-config = [defaults, config].reduce(Object.assign);
-````
-
-with
-
-````
-Object.assign(config, defaults);
-````
-
 ### targets
 
 call ``npm run`` to see all targets

@@ -1,10 +1,17 @@
 // helper methods used by many ampere components
 
-import {Diary} from '../lib/diary/diary';
+import Logger from './logger';
 
-let logger = Diary.logger('util')
+let logger = Logger('util')
 logger.info( "loaded");
 
+  /*
+    @return the prefix string used for log messages and errors
+  */
+function _getNamespace(obj:Base) {
+  return `${obj.type}:${obj.options[Constants.NAMESPACE]}`;
+};
+/*
 function assert(condition, msg) {
   if(typeof(condition)==='function') {
     msg = msg || `assert "condition.toString()" failed`;
@@ -22,13 +29,6 @@ function assert(condition, msg) {
   return this;
 }
 
-  /*
-    @return the prefix string used for log messages and errors
-  */
-function _getNamespace(obj:Base) {
-  return `${obj.type}:${obj.options[Constants.NAMESPACE]}`;
-};
-/*
 function spawn(generator) {
     // ensure argument is a generator function
   assert(generator && generator.constructor && 'GeneratorFunction' == generator.constructor.name, 'functor(generator) : argument expected to be a generator');
@@ -104,6 +104,7 @@ let unPromisify = (function() {
   }
 })();
 */
+
 export {
   _getNamespace,
   spawn

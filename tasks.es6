@@ -25,7 +25,6 @@ gulp.task('prepare', ['clean'], ()=> {
   return es.merge(
     //gulp.src('./node_modules/traceur/bin/traceur-runtime.js').pipe(dest('lib/traceur')),
     gulp.src('./node_modules/rtts-assert/src/**/*.js').pipe(dest('es6/lib/assert')),
-    gulp.src('./node_modules/diary/src/**/*.js').pipe(dest('es6/lib/diary')),
     gulp.src('./src/**/*.js').pipe(dest('es6/src')),
     gulp.src('./test/**/*.js').pipe(dest('es6/test'))
   );
@@ -35,7 +34,7 @@ gulp.task('build', ['prepare'], ()=>{
   var arr = [];
   return promisify(
     es.merge(
-      ...[for(dir of ['lib/diary', 'lib/assert', 'src/', 'test/']) shell.task(`node_modules/traceur/traceur \
+      ...[for(dir of ['lib/assert', 'src/', 'test/']) shell.task(`node_modules/traceur/traceur \
       --experimental \
       --array-comprehension=true \
       --type-assertions \

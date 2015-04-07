@@ -4,20 +4,16 @@
   It exposes the Ampere Domain creator function and ampere related constants
 */
 
-import {Diary} from '../lib/diary/diary';
-import {ConsoleReporter} from '../lib/diary/reporters/console';
+import Logger from "./logger";
 import Constants from "./constants";
 import {_getNamespace} from "./util";
 
   // configure Ampere logging
-if( global.Ampere && global.Ampere.VERBOSE) {
-  Diary.reporter(
-    new ConsoleReporter({console:console}),
-    { level : '*'}
-  );
+if( global.Ampere && global.Ampere.DEBUG) {
+  Logger.filter = /^.*/;
 }
 
-Diary.logger('ampere').info( "loaded");
+Logger('ampere').info( "loaded");
 
   /**
   * creates a new domain

@@ -24,6 +24,7 @@ module.exports = exports = function() {
       , 'test/view-spec.js'
       , 'test/app-spec.js'
       , 'test/ampere-spec.js'
+      , 'test/ui-spec.js'
     ],
       // A function to call on completion.
       // function(passed)
