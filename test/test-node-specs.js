@@ -19,10 +19,10 @@ if( process.argv[1].indexOf( 'build/es6/test')!==-1) {
     }
   );
 } else {
-  console.log( '(running tests compiled to commonjs)');
+  console.log('(running tests compiled to commonjs)');
     // commonjs mode : load traceur runtime
-  require( '../../../node_modules/traceur/bin/traceur-runtime.js');
+  require('../../../node_modules/traceur/bin/traceur-runtime.js');
 }
 
-process.chdir( __dirname + '/..');
+process.chdir(__dirname + '/..');
 jasmine.executeSpecs( options);
