@@ -1,9 +1,9 @@
-import Ampere from "../src/ampere";
-import Module from "../src/module";
-import Constants from "../src/constants";
+import Ampere from '../src/ampere';
+import Module from '../src/module';
+import Constants from '../src/constants';
 
-describe("Module", function () {
-  it("instanceof/type", done=>{
+describe('Module', function () {
+  it('instanceof/type', done=>{
     Ampere.domain(null,domain=>{
       domain.createModule('foo', module=>{
         expect(module instanceof Module).toBe( true);
@@ -13,7 +13,7 @@ describe("Module", function () {
     });
   });
 
-  it("name", done=>{
+  it('name', done=>{
     Ampere.domain(null,domain=>{
       domain.createModule(Constants.DEFAULT, module=>{
         expect(module.name).toBe(Constants.DEFAULT);
@@ -27,7 +27,7 @@ describe("Module", function () {
     });
   });
 
-  it("namespace", done=>{
+  it('namespace', done=>{
     Ampere.domain(null,domain=>{
       domain.createModule('mymodule', module=>{
         expect(module.options[Ampere.NAME]).toEqual(module.name);
@@ -38,8 +38,8 @@ describe("Module", function () {
     });
   });
 
-  describe("module.createState()", ()=>{
-    it("create state with same name should fail", done=>{
+  describe('module.createState()', ()=>{
+    it('create state with same name should fail', done=>{
       Ampere.domain(null,domain=>{
         domain.createModule(null, module=>{
           module.createState('foo', state=>{
@@ -52,7 +52,7 @@ describe("Module", function () {
       });
     });
 
-    it("create state with same name (the default) should fail", done=>{
+    it('create state with same name (the default) should fail', done=>{
       Ampere.domain(null,domain=>{
         domain.createModule(null, module=>{
           module.createState(null, state=>{
@@ -65,7 +65,7 @@ describe("Module", function () {
       });
     });
 
-    it("create state without view should fail", done=>{
+    it('create state without view should fail', done=>{
       Ampere.domain(null,domain=>{
         domain.createModule(null, module=>{
           let state = module.createState(null, state=>{});
@@ -76,9 +76,9 @@ describe("Module", function () {
     });
   });
 
-  describe("createTransition()", ()=>{
+  describe('createTransition()', ()=>{
 
-    it("create transition", done=>{
+    it('create transition', done=>{
       Ampere.domain(null, domain=>{
         domain.createModule(null, module=>{
           let view;
@@ -93,7 +93,7 @@ describe("Module", function () {
       });
     });
 
-    it("create transition without 3rd argument should fail", done=>{
+    it('create transition without 3rd argument should fail', done=>{
       Ampere.domain(null, domain=>{
         domain.createModule(null, module=>{
           module.createState(null, state=>{
@@ -106,14 +106,12 @@ describe("Module", function () {
       });
     });
 
-    it("create transition with 3rd argument function<view> should work", done=>{
+    it('create transition with 3rd argument function<view> should work', done=>{
       Ampere.domain(null, domain=>{
         domain.createModule(null, module=>{
-          let _state, _view;
+          let _view;
           module.createState(null, state=>{
             _view = state.createView(null, view=>view.createTemplate('mytemplate'));
-
-            _state = state;
           });
           expect(()=>module.createTransition(null, transition=>{}, ()=>_view)).not.toThrow();
 
@@ -125,7 +123,7 @@ describe("Module", function () {
       });
     });
 
-    it("create transition should produce a transition with a transparent 'view' property", done=>{
+    it('create transition should produce a transition with a transparent "view" property', done=>{
       Ampere.domain(null, domain=>{
         domain.createModule(null, module=>{
           let view;
@@ -152,8 +150,8 @@ describe("Module", function () {
     });
   });
 
-  it("options", done=>{
-    let a = Ampere.domain(null,domain=>{
+  it('options', done=>{
+    Ampere.domain(null,domain=>{
       domain.createModule('mymodule', module=>{
         expect(module.options).toBeDefined();
         expect(typeof(module.options)).toBe('object');

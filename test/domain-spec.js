@@ -1,16 +1,16 @@
-import Ampere from "../src/ampere";
-import Domain from "../src/domain";
-import Constants from "../src/constants";
+import Ampere from '../src/ampere';
+import Domain from '../src/domain';
+import Constants from '../src/constants';
 
-describe("Domain", function () {
-  it("instanceof/type Domain", ()=>{
+describe('Domain', function () {
+  it('instanceof/type Domain', ()=>{
     let domain = Ampere.domain(null,domain=>{});
 
     expect(domain instanceof Domain).toBe( true);
     expect(domain.type).toBe( 'domain');
   });
 
-  it("name", ()=>{
+  it('name', ()=>{
     let domain = Ampere.domain(null,domain=>{});
     expect(domain.name).toBe( Constants.DEFAULT);
 
@@ -18,14 +18,14 @@ describe("Domain", function () {
     expect(domain.name).toBe( 'myampere');
   });
 
-  it("namespace", ()=>{
+  it('namespace', ()=>{
     let domain = Ampere.domain(null,domain=>{});
     expect(domain.options[Ampere.NAME]).toEqual( domain.name);
       // namespace===name for domain objects
     expect(domain.options[Ampere.NAMESPACE]).toEqual( '["Ampere"].[default]');
   });
 
-  it("create module with same name should fail", done=>{
+  it('create module with same name should fail', done=>{
     Ampere.domain(null,domain=>{
       domain.createModule('mymodule', module=>{
       });
@@ -36,7 +36,7 @@ describe("Domain", function () {
     });
   });
 
-  it("options", ()=>{
+  it('options', ()=>{
     Ampere.options.foo = 'bar';
 
     let domain = Ampere.domain(null,domain=>{});

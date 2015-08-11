@@ -1,10 +1,9 @@
-import Ampere from "../src/ampere";
-import State from "../src/state";
-import View from "../src/view";
-import Constants from "../src/constants";
+import Ampere from '../src/ampere';
+import View from '../src/view';
+import Constants from '../src/constants';
 
-describe("View", function () {
-  it("instanceof/type View", done=>{
+describe('View', function () {
+  it('instanceof/type View', done=>{
     Ampere.domain(null,domain=>{
       domain.createModule(null, module=>{
         module.createState(null, state=>{
@@ -20,7 +19,7 @@ describe("View", function () {
     });
   });
 
-  it("default name", done=>{
+  it('default name', done=>{
     Ampere.domain(null,domain=>{
       domain.createModule(null, module=>{
         module.createState(null, state=>{
@@ -33,7 +32,7 @@ describe("View", function () {
     });
   });
 
-  it("name", done=>{
+  it('name', done=>{
     Ampere.domain(null,domain=>{
       domain.createModule(null, module=>{
         module.createState(null, state=>{
@@ -46,7 +45,7 @@ describe("View", function () {
     });
   });
 
-  it("namespace", done=>{
+  it('namespace', done=>{
     Ampere.domain(null,domain=>{
       domain.createModule('mymodule', module=>{
         module.createState('foo', state=>{
@@ -61,8 +60,8 @@ describe("View", function () {
     });
   });
 
-  describe("createTransition()", ()=>{
-    it("create transition with same name should fail", done=>{
+  describe('createTransition()', ()=>{
+    it('create transition with same name should fail', done=>{
       Ampere.domain(null, domain=>{
         domain.createModule(null, module=>{
           module.createState(null, state=>{
@@ -78,7 +77,7 @@ describe("View", function () {
       });
     });
 
-    it("create transition with same name (the default) should fail", done=>{
+    it('create transition with same name (the default) should fail', done=>{
       Ampere.domain(null, domain=>{
         domain.createModule(null, module=>{
           module.createState(null, state=>{
@@ -94,7 +93,7 @@ describe("View", function () {
       });
     });
 
-    it("create transition with non-view-object as target should fail", done=>{
+    it('create transition with non-view-object as target should fail', done=>{
       Ampere.domain(null, domain=>{
         domain.createModule(null, module=>{
           module.createState('b', state=>{
@@ -111,7 +110,7 @@ describe("View", function () {
       });
     });
 
-    it("create transition with state-object as target should fail", done=>{
+    it('create transition with state-object as target should fail', done=>{
       Ampere.domain(null, domain=>{
         domain.createModule(null, module=>{
           let b = { };
@@ -133,7 +132,7 @@ describe("View", function () {
       });
     });
 
-    it("create transition with state-object-without-default-view as target should fail", done=>{
+    it('create transition with state-object-without-default-view as target should fail', done=>{
       Ampere.domain(null, domain=>{
         domain.createModule(null, module=>{
           module.createState('a', state=>{
@@ -153,7 +152,7 @@ describe("View", function () {
       });
     });
 
-    it("create transition with state/view-object-of-different-domain as target should fail", done=>{
+    it('create transition with state/view-object-of-different-domain as target should fail', done=>{
       let foreignDomainState;
       Ampere.domain(null, domain=>
         domain.createModule(null, module=>
@@ -184,8 +183,8 @@ describe("View", function () {
     });
   });
 
-  it("options", done=>{
-    let a = Ampere.domain(null,domain=>{
+  it('options', done=>{
+    Ampere.domain(null,domain=>{
       domain.createModule(null, module=>{
         module.createState(null, state=>{
           state.createView('foo', view=>{

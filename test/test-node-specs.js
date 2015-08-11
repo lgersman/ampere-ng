@@ -1,7 +1,7 @@
 var jasmine = require('minijasminenode2');
 
   // configure jasmine
-var options = require( "./test-node-specs-options")();
+var options = require( './test-node-specs-options')();
 
 if( process.argv[1].indexOf( 'build/es6/test')!==-1) {
   console.log( '(running tests with traceur as commonjs loader)');

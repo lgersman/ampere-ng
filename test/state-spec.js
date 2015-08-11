@@ -1,9 +1,9 @@
-import Ampere from "../src/ampere";
-import State from "../src/state";
-import Constants from "../src/constants";
+import Ampere from '../src/ampere';
+import State from '../src/state';
+import Constants from '../src/constants';
 
-describe("State", function () {
-  it("instanceof/type State", done=>{
+describe('State', function () {
+  it('instanceof/type State', done=>{
     Ampere.domain(null, domain=>{
       domain.createModule(null, module=>{
         module.createState('foo', state=>{
@@ -19,7 +19,7 @@ describe("State", function () {
     });
   });
 
-  it("default name", done=>{
+  it('default name', done=>{
     Ampere.domain(null, domain=>{
       domain.createModule(null, module=>{
         module.createState(null, state=>{
@@ -34,7 +34,7 @@ describe("State", function () {
     });
   });
 
-  it("name", done=>{
+  it('name', done=>{
     Ampere.domain(null, domain=>{
       domain.createModule(null, module=>{
         module.createState('foo', state=>{
@@ -49,7 +49,7 @@ describe("State", function () {
     });
   });
 
-  it("namespace", done=>{
+  it('namespace', done=>{
     Ampere.domain(null, domain=>{
       domain.createModule('mymodule', module=>{
         module.createState('foo', state=>{
@@ -66,8 +66,8 @@ describe("State", function () {
     });
   });
 
-  describe("state.createView()", ()=>{
-    it("view with same name should fail", done=>{
+  describe('state.createView()', ()=>{
+    it('view with same name should fail', done=>{
       Ampere.domain(null, domain=>{
         domain.createModule(null, module=>{
           module.createState(null, state=>{
@@ -80,7 +80,7 @@ describe("State", function () {
       });
     });
 
-    it("view with same name (the default) should fail", done=>{
+    it('view with same name (the default) should fail', done=>{
       Ampere.domain(null, domain=>{
         domain.createModule(null, module=>{
           module.createState(null, state=>{
@@ -94,8 +94,8 @@ describe("State", function () {
     });
   });
 
-  it("options", done=>{
-    let a = Ampere.domain(null,domain=>{
+  it('options', done=>{
+    Ampere.domain(null,domain=>{
       domain.createModule(null, module=>{
         module.createState('foo', state=>{
           state.createView(null, view=>{

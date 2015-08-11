@@ -1,15 +1,15 @@
-import Base from "../src/base";
-import Ampere from "../src/ampere";
-import Constants from "../src/constants";
+import Base from '../src/base';
+import Ampere from '../src/ampere';
+import Constants from '../src/constants';
 
-describe("Base", function () {
+describe('Base', function () {
   class Mock extends Base {
     constructor(name:string=Constants.DEFAULT, type:string='mock', parentOptions) {
       super(name, type, parentOptions);
     }
   }
 
-  it("instanceof/type Base", ()=>{
+  it('instanceof/type Base', ()=>{
     let mock = new Mock();
 
     expect(mock instanceof Mock).toBe( true);
@@ -17,7 +17,7 @@ describe("Base", function () {
     expect(mock.type).toBe('mock');
   });
 
-  it("name/namespace", ()=>{
+  it('name/namespace', ()=>{
     let parent = new Mock('foo');
     let mock = new Mock('bar', undefined, parent.options);
 
@@ -26,7 +26,7 @@ describe("Base", function () {
     expect(mock.options[Ampere.NAMESPACE]).toEqual( '["foo"].["bar"]');
   });
 
-  it("assert()", ()=>{
+  it('assert()', ()=>{
     let mock = new Mock();
 
     let message=undefined;
@@ -59,36 +59,36 @@ describe("Base", function () {
     expect(called).toBe(false);
   });
 
-  describe("promise()", ()=>{
-    it("Base._PROMISIFY should be inaccessible after calling options[Base._PROMISIFY]", ()=>{
+  describe('promise()', ()=>{
+    it('Base._PROMISIFY should be inaccessible after calling options[Base._PROMISIFY]', ()=>{
       let mock = new Mock();
       expect(mock.options[Base._PROMISIFY]).toBeDefined();
       mock.options[Base._PROMISIFY](()=>{});
       expect(mock.options[Base._PROMISIFY]).not.toBeDefined();
     });
 
-    it("should resolve to the callback non-promise-return-value", done=>{
+    it('should resolve to the callback non-promise-return-value', done=>{
       let mock = new Mock();
-      mock.options[Base._PROMISIFY](()=>"myretval");
+      mock.options[Base._PROMISIFY](()=>'myretval');
       mock.promise.then(val=>{
-        expect(val).toBe("myretval");
+        expect(val).toBe('myretval');
         done();
       });
     });
 
-    it("should reject to the error throwed by the callback", done=>{
+    it('should reject to the error throwed by the callback', done=>{
       let mock = new Mock();
       mock.options[Base._PROMISIFY](()=>{
-        throw new Error("did not work");
+        throw new Error('did not work');
       });
       mock.promise.catch(err=>{
         expect(err instanceof Error).toBe(true);
-        expect(err.message).toBe("did not work");
+        expect(err.message).toBe('did not work');
         done();
       });
     });
 
-    it("should provide arguments to the callback function", done=>{
+    it('should provide arguments to the callback function', done=>{
       let mock = new Mock();
       mock.options[Base._PROMISIFY]((...args)=>args, 4, 5, 3);
       mock.promise.then(val=>{
@@ -97,11 +97,11 @@ describe("Base", function () {
       });
     });
 
-    it("should provide base instance to the callback function", done=>{
+    it('should provide base instance to the callback function', done=>{
       let mock = new Mock();
-      mock.options["factor"]=2;
+      mock.options['factor']=2;
       mock.options[Base._PROMISIFY](
-        (mock, ...args)=>args.reduce((sum, val)=>mock.options["factor"]*(sum+val), 0),
+        (mock, ...args)=>args.reduce((sum, val)=>mock.options['factor']*(sum+val), 0),
         4, 5, 3
       );
       mock.promise.then(val=>{
@@ -110,26 +110,26 @@ describe("Base", function () {
       });
     });
 
-    it("should resolve to the value of the promise returned by callback", done=>{
+    it('should resolve to the value of the promise returned by callback', done=>{
       let mock = new Mock();
-      mock.options[Base._PROMISIFY](()=>Promise.resolve("myretval"));
+      mock.options[Base._PROMISIFY](()=>Promise.resolve('myretval'));
       mock.promise.then(val=>{
-        expect(val).toBe("myretval");
+        expect(val).toBe('myretval');
         done();
       });
     });
 
-    it("should resolve to the rejected value of the promise returned by callback", done=>{
+    it('should resolve to the rejected value of the promise returned by callback', done=>{
       let mock = new Mock();
-      mock.options[Base._PROMISIFY](()=>new Promise((resolve,reject)=>reject("my error")));
+      mock.options[Base._PROMISIFY](()=>new Promise((resolve,reject)=>reject('my error')));
       mock.promise.catch(val=>{
-        expect(val).toBe("my error");
+        expect(val).toBe('my error');
         done();
       });
     });
   });
 
-  it("options", ()=>{
+  it('options', ()=>{
     let mock = new Mock();
 
     expect(mock.options).toBeDefined();
