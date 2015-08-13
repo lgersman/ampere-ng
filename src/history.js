@@ -1,11 +1,9 @@
 import Logger from './logger';
-Logger('history').info( "loaded");
+Logger('history').info('loaded');
 
 import Base from './base';
-import View from './view';
 import Constants from './constants';
 import App from './app';
-import {spawn} from './util';
 
 let PROPERTY_UNDO_STACK = Symbol('UNDO_STACK'),
     PROPERTY_REDO_STACK = Symbol('REDO_STACK'),
@@ -32,7 +30,7 @@ function _when(fn:Function) {
 
     // set busy to true
   let notifier = Object.getNotifier && Object.getNotifier(this), promise;
-  if(!this[PROPERTY_BUSY]) {
+  if (!this[PROPERTY_BUSY]) {
     this[PROPERTY_BUSY]=true;
     notifier && notifier.notify({type: 'update', name: 'busy', oldValue: false});
   }
@@ -54,7 +52,7 @@ function _when(fn:Function) {
   let resetbusy_handler = ()=>{
       // only if our promise is the last recent one
       // we need to take care of resetting the 'busy' property
-    if(promise === this[PROPERTY_BUSY_PROMISE]) {
+    if (promise === this[PROPERTY_BUSY_PROMISE]) {
       this[PROPERTY_BUSY]=false;
       notifier && notifier.notify({type: 'update', name: 'busy', oldValue: true});
     }
@@ -67,7 +65,7 @@ function _when(fn:Function) {
 function _trackCanProperties() {
   let notifier = Object.getNotifier && Object.getNotifier(this);
 
-  if(notifier) {
+  if (notifier) {
     let canBefore = {
       redo : this.canRedo,
       undo : this.canUndo,
@@ -191,13 +189,13 @@ export default class History extends Base {
       promise = promise.then(
         undo=>{
             // if history is enabled and no undo/redo operation is in progress
-          if(this.limit!==0 && !this[UNDOREDO_OPERATION_IN_PROGRESS]) {
+          if (this.limit!==0 && !this[UNDOREDO_OPERATION_IN_PROGRESS]) {
             let notifyCanPropertyChanges = _trackCanProperties.call(this);
 
               // cleanup redo stack
             this[PROPERTY_REDO_STACK].splice(0);
 
-            if(typeof(undo)==='function') {
+            if (typeof(undo)==='function') {
                 // insert new undo operation
               this[PROPERTY_UNDO_STACK].push({
                 fn    : undo,
@@ -244,20 +242,20 @@ export default class History extends Base {
       });
 
       return undoResult.then(redo=>{
-        if(this.limit!==0) {
+        if (this.limit!==0) {
           let notifyCanPropertyChanges = _trackCanProperties.call(this);
 
             // remove operation from undo stack
           undoStack.pop();
 
-          if(typeof(redo)==='function') {
+          if (typeof(redo)==='function') {
             redoStack.push({
               fn    : redo,
               view : this.app.view
             });
 
               // remove oldest redo operation if redo count > limit
-            if(redoStack.length>this.limit) {
+            if (redoStack.length>this.limit) {
               redoStack.shift();
             }
 
@@ -299,20 +297,20 @@ export default class History extends Base {
       });
 
       return redoResult.then(undo=>{
-        if(this.limit!==0) {
+        if (this.limit!==0) {
           let notifyCanPropertyChanges = _trackCanProperties.call(this);
 
             // remove operation from redo stack
           redoStack.pop();
 
-          if(typeof(undo)==='function') {
+          if (typeof(undo)==='function') {
             undoStack.push({
               fn    : undo,
               view : this.app.view
             });
 
               // remove oldest undo operation if undo count > limit
-            if(undoStack.length>this.limit) {
+            if (undoStack.length>this.limit) {
               undoStack.shift();
             }
           } else {

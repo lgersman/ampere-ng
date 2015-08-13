@@ -3,7 +3,7 @@
   */
 
 //require( './node_modules/traceur/bin/traceur-runtime.js');
-
+/*
 require('traceur').require.makeDefault(
   function(filename) {
       // only transpile tasks.js and example descriptions
@@ -17,5 +17,11 @@ require('traceur').require.makeDefault(
     //annotations        : true,
   }
 );
+*/
+
+require('babel/register')({
+  extensions: ['.es6'],
+  stage : 0
+});
 
 require('./tasks.es6');

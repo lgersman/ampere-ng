@@ -6,8 +6,7 @@ const gulp        = require('gulp'),
       del      = require('del'),
       es          = require('event-stream'),
       shell       = require('gulp-shell'),
-      browserify  = require('browserify'),
-      source      = require('vinyl-source-stream'),
+//      browserify  = require('browserify'),
       gzip        = require('gulp-gzip')
 ;
 
@@ -31,7 +30,6 @@ gulp.task('prepare', ['clean'], ()=> {
 });
 
 gulp.task('build', ['prepare'], ()=>{
-  var arr = [];
   return promisify(
     es.merge(
       ...[for(dir of ['lib/assert', 'src/', 'test/']) shell.task(`node_modules/traceur/traceur \
@@ -64,8 +62,8 @@ gulp.task('build', ['prepare'], ()=>{
   }
 );
 
-gulp.task('test:node', ['build'], ()=>{
-  return shell.task('node build/commonjs/test/test-node-specs.js -v')()
+gulp.task('test:node', [/*'build'*/], ()=>{
+  return shell.task('node test/test-node-specs.js')()
 });
 
 gulp.task('test', ['test:node'], cb=>{

@@ -1,7 +1,7 @@
 import Logger from './logger';
-Logger('module').info( "loaded");
-import Constants from "./constants";
-import Base from "./base";
+Logger('module').info( 'loaded');
+import Constants from './constants';
+import Base from './base';
 
 /**
   Module contains a set of states connected by transitions.
@@ -59,7 +59,7 @@ export default class Module extends Base {
       // manual type assertion
     assert.argumentTypes(name, $traceurRuntime.type.string, createStateCb, Function);
 
-    if(typeof(name)!=='string') {
+    if (typeof(name)!=='string') {
       this.log(`createStateCb() : name argument(='${name}') is not a string -> reset name to Constants.DEFAULT`);
       name = Constants.DEFAULT;
     }
@@ -86,7 +86,7 @@ export default class Module extends Base {
       '3rd argument expected to be View or function<View>'
     );
 
-    if(typeof(name)!=='string') {
+    if (typeof(name)!=='string') {
       this.log( `createTransition() : name argument(='${name}') is not a string -> reset name to Constants.DEFAULT`);
       name = Constants.DEFAULT;
     }
@@ -98,7 +98,7 @@ export default class Module extends Base {
     let targetView = targetViewOrCb;
 
       // manual type assertion
-    if(targetView instanceof View) {
+    if (targetView instanceof View) {
       assert.argumentTypes(name, $traceurRuntime.type.string, createTransitionCb, Function, targetView, View);
 
         // ensure both states are owned by same module
@@ -111,8 +111,7 @@ export default class Module extends Base {
   }
 }
 
-import Domain from "./domain";
-import State from "./state";
-import {_getNamespace} from "./util";
-import View from "./view";
-import Transition from "./transition";
+import Domain from './domain';
+import State from './state';
+import View from './view';
+import Transition from './transition';

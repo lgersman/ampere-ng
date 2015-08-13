@@ -1,9 +1,9 @@
 let filters = [];
 
 let log = function(priority,logger,args) {
-  if(priority!='log' && console) {
-    for(let filter in filters) {
-      if(filter.test(this.type)) {
+  if (priority!='log' && console) {
+    for (let filter in filters) {
+      if (filter.test(this.type)) {
         console[priority].apply(console, [logger.prefix(args[0])]);
         break;
       }
@@ -39,7 +39,7 @@ class Log {
 
   assert(condition, msg) {
     typeof(condition)==='function' && (condition=condition());
-    if(!condition) {
+    if (!condition) {
       typeof(msg)==='function' && (msg=msg());
       throw new Error(this.prefix(msg));
     }
@@ -66,12 +66,12 @@ Object.defineProperty(Logger, 'filter', {
     return filters;
   },
   set : function(args) {
-    if(!Array.isArray(args)) {
+    if (!Array.isArray(args)) {
       args = [args];
     }
 
-    for(let i in args) {
-      if(!(args[i] instanceof RegExp)) {
+    for (let i in args) {
+      if (!(args[i] instanceof RegExp)) {
         throw new Error(`Logger.filter(...args) : argument(s) expected to be regexp's but argument[${i}] was ${filter}`);
       }
     }

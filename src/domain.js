@@ -1,7 +1,7 @@
 import Logger from './logger';
-Logger('domain').info( "loaded");
-import Constants from "./constants";
-import Base from "./base";
+Logger('domain').info('loaded');
+import Constants from './constants';
+import Base from './base';
 
 /**
   Domain represents an encapsulated world of Ampere modules.
@@ -35,7 +35,7 @@ export default class Domain extends Base {
       // manual type assertion
     assert.argumentTypes(name, $traceurRuntime.type.string, createModuleCb, Function);
 
-    if(typeof(name)!=='string') {
+    if (typeof(name)!=='string') {
       this.log(`createModuleCb() : name argument(='${name}') is not a string -> reset name to Constants.DEFAULT`);
       name = Constants.DEFAULT;
     }
@@ -50,5 +50,4 @@ export default class Domain extends Base {
   }
 }
 
-import {_getNamespace} from "./util";
-import Module from "./module";
+import Module from './module';

@@ -4,16 +4,15 @@
   It exposes the Ampere Domain creator function and ampere related constants
 */
 
-import Logger from "./logger";
-import Constants from "./constants";
-import {_getNamespace} from "./util";
+import Logger from './logger';
+import Constants from './constants';
 
   // configure Ampere logging
-if( global.Ampere && global.Ampere.DEBUG) {
+if (global.Ampere && global.Ampere.DEBUG) {
   Logger.filter = /^.*/;
 }
 
-Logger('ampere').info( "loaded");
+Logger('ampere').info( 'loaded');
 
   /**
   * creates a new domain
@@ -32,13 +31,13 @@ function createDomain(name:string=Constants.DEFAULT, cb:Function) {
 * creates a new app
 *
 */
-import App from "./app";
-import View from "./view";
+import App from './app';
+import View from './view';
 function createApp(view:View, cb:Function=()=>{}) {
   return new App(view, cb);
 }
 
-import Base from "./base";
+import Base from './base';
 var Ampere = Object.create(new Base('Ampere', 'ampere'), {
   'domain' : {
     value    : createDomain,
@@ -56,7 +55,7 @@ var Ampere = Object.create(new Base('Ampere', 'ampere'), {
   }*/
 });
 
-import Domain from "./domain";
+import Domain from './domain';
   // TODO : this is a hack !!
   // because traceur cannot handle circular references (Ampere needs Domain and Domain needs Ampere)
   // we provide Ampere to Domain by attaching it as constant to the Domain class
@@ -66,7 +65,7 @@ Object.defineProperty(Domain, 'Ampere', {
   enumerable : true
 });
 
-for(let name of Object.getOwnPropertyNames(Constants)) {
+for (let name of Object.getOwnPropertyNames(Constants)) {
   Object.defineProperty(Ampere, name, {
     value    : Constants[name],
     writable : false,

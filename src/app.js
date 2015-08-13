@@ -1,9 +1,8 @@
 import Logger from './logger';
-Logger('app').info( "loaded");
+Logger('app').info('loaded');
 
 import Base from './base';
 import View from './view';
-import util from './util';
 import Constants from './constants';
 import Transition from './transition';
 
@@ -14,7 +13,7 @@ function wrapOperation(operation:Function, view:View, setView:Function) {
   let wrapper = function() {
     let reverseView = view.state.module.app.view;
 
-    if(typeof(operation)==='function') {
+    if (typeof(operation)==='function') {
       let promise = new Promise((resolve, reject)=>{
         try {
           return Promise.resolve(operation()).then(resolve, reject);
@@ -27,7 +26,7 @@ function wrapOperation(operation:Function, view:View, setView:Function) {
           // wait for transition view to be ready
         reverseOperation=>view.promise.then(()=>{
           setView(view);
-          if(typeof(reverseOperation)==='function') {
+          if (typeof(reverseOperation)==='function') {
             return wrapOperation(reverseOperation, reverseView, setView);
           } else {
             return reverseOperation;
@@ -76,7 +75,9 @@ function defaultExecutor(transition:Transition,setView:Function,...params) {
 export default class App extends Base {
   constructor(view:View, cb:Function=(app)=>{}) {
       // ensure module is not yet associated with an app
-    this.assert(!Object.hasOwnProperty(view.state.module, 'app'), ()=>`module is already associated with app(=${view.state.module.ui.name})`);
+    if (!Object.hasOwnProperty(view.state.module, 'app')) {
+      throw new Error(`module is already associated with app(=${view.state.module.ui.name})`);
+    }
 
     var options = Object.create(view.state.module.options);
 
@@ -94,7 +95,7 @@ export default class App extends Base {
         _uiInterface,
         setView = (function(notifier) {
           return function setView(view:View) {
-            if(notifier) {
+            if (notifier) {
               let oldView = _view;
 
               // not needed here
@@ -207,7 +208,7 @@ export default class App extends Base {
       }, []),
       view.promise
     ]).then((...args)=>{
-      this.log( "app is ready(arguments=" + JSON.stringify(args) + ')');
+      this.log(`app is ready(arguments=${JSON.stringify(args)})`);
       return args[0][0];
     }, err=>{
       //this.log.error( "failed to initialize app : " + err);

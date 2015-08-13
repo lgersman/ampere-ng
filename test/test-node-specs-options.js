@@ -1,10 +1,10 @@
+/*
 var VERBOSE = process.argv.some(function(item) {
   if (item==='-v') {
     return true;
   };
 });
 
-/*
 global.Ampere = {
   VERBOSE : VERBOSE
 };
@@ -30,7 +30,7 @@ module.exports = exports = function() {
       // function(passed)
     //onComplete: function(passed) { console.log('done!'); },
       // If true, display suite and spec names.
-    isVerbose: VERBOSE,
+    isVerbose: true,
       // If true, print colors to the terminal.
     showColors: true,
       // If true, include stack traces in failures.

@@ -1,5 +1,5 @@
 import Logger from './logger';
-Logger('base').info( "loaded");
+Logger('base').info('loaded');
 
 // TODO : this should be importable but traceur fails right now
 // fortunately the chained sources helps us out and provide Ampere
@@ -18,8 +18,8 @@ Logger('base').info( "loaded");
   Base is Promise-alike so it might be initialized lazily.
 */
 export default class Base {
-  constructor(name:string, type:string, parentOptions:Object=null) {
-    let namespace = parentOptions && parentOptions[Constants.NAMESPACE];
+  constructor(name:string, type:string, parentOptions:Object={}) {
+    let namespace = parentOptions[Constants.NAMESPACE];
     namespace = namespace ? `${namespace}.[${name!=Constants.DEFAULT ? JSON.stringify(name) : 'default'}]` : `[${name!=Constants.DEFAULT ? JSON.stringify(name) : 'default'}]`;
 
     Object.defineProperties(this, {
@@ -63,9 +63,9 @@ export default class Base {
       // Base.options[Base._PROMISIFY]
     let promise = new Promise((resolve,reject)=>{
       this.options[Base._PROMISIFY] = (cb, ...args)=>{
-            // TODO : Function type as argument doesnt work with traceur yet
-            // thats why we call assert manually
-          assert.argumentTypes(cb, Function);
+          if (typeof(cb)!=='function') {
+            throw new TypeError('parameter "cb" expected to be a function');
+          }
 
             // remove deferred on call
           delete this.options[Base._PROMISIFY];
@@ -111,14 +111,14 @@ export default class Base {
       @return this
     */
   assert(condition, msg) {
-    if(typeof(condition)==='function') {
+    if (typeof(condition)==='function') {
       msg = msg || `assert "condition.toString()" failed`;
       condition = condition();
     } else {
       msg = msg || 'assert(...) failed';
     }
 
-    if(!condition) {
+    if (!condition) {
       (typeof(msg)=='function') && (msg = msg());
 
       throw new Error( `[${this.type}:${this.options[Constants.NAMESPACE]}] : ${msg}`);
@@ -139,5 +139,5 @@ export default class Base {
   // protected option key to retrieve wrapper function finalizing the derived object
 Base._PROMISIFY = Symbol('promisify');
 
-import {_getNamespace} from "./util";
-import Constants from "./constants";
+import {_getNamespace} from './util';
+import Constants from './constants';

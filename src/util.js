@@ -3,7 +3,7 @@
 import Logger from './logger';
 
 let logger = Logger('util')
-logger.info( "loaded");
+logger.info('loaded');
 
   /*
     @return the prefix string used for log messages and errors
@@ -14,7 +14,7 @@ function _getNamespace(obj:Base) {
 /*
 function assert(condition, msg) {
   if(typeof(condition)==='function') {
-    msg = msg || `assert "condition.toString()" failed`;
+    msg = msg || `assert 'condition.toString()' failed`;
     condition = condition();
   } else {
     msg = msg || 'assert(...) failed';
@@ -64,8 +64,8 @@ function spawn(generatorFunc) {
   }
 
   let generator = generatorFunc(),
-      onFulfilled = continuer.bind(continuer, "next"),
-      onRejected = continuer.bind(continuer, "throw")
+      onFulfilled = continuer.bind(continuer, 'next'),
+      onRejected = continuer.bind(continuer, 'throw')
   ;
 
   return onFulfilled();
@@ -92,9 +92,9 @@ let unPromisify = (function() {
 
   return function unPromisify(promise:Promise) {
     let iter = run(function*generator(resume) {
-      console.log("before");
+      console.log('before');
       var result = yield resume(promise);
-      console.log("result = " + result);
+      console.log('result = ' + result);
     });
 
     debugger

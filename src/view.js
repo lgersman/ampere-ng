@@ -1,8 +1,8 @@
 import Logger from './logger';
-Logger('view').info( "loaded");
+Logger('view').info('loaded');
 
-import Constants from "./constants";
-import Base from "./base";
+import Constants from './constants';
+import Base from './base';
 
 /**
   View is a dedicated screen of a State. A State has always >= 1 views.
@@ -32,7 +32,7 @@ export default class View extends Base {
       return new Promise((resolve,reject)=>{
         try {
           return Promise.resolve(cb(this)).then(val=>{
-            !('template' in this) && this.log.warn("no template was assigned.");
+            !('template' in this) && this.log.warn('no template was assigned.');
             return val;
           })
           .then(resolve, reject);
@@ -48,7 +48,7 @@ export default class View extends Base {
   createTransition(name:string, createTransitionCb:Function, targetView) {
     this.assert(!this.state.app, `createTransition(...) : You cannot create transitions after view states module is in use by an app`);
 
-    if(typeof(name)!=='string') {
+    if (typeof(name)!=='string') {
       this.log( `createTransition() : name argument(='${name}') is not a string -> reset name to Constants.DEFAULT`);
       name = Constants.DEFAULT;
     }
@@ -58,7 +58,7 @@ export default class View extends Base {
     .log(`register transition '${name}'`);
 
       // try evaluate target view if not provided
-    if(arguments.length===2) {
+    if (arguments.length===2) {
       this.log( 'createTransition() : target view argument not given - assume this as target view');
       targetView = this;
     }
@@ -91,5 +91,5 @@ export default class View extends Base {
   }
 }
 
-import Transition from "./transition";
-import State from "./state";
+import Transition from './transition';
+import State from './state';

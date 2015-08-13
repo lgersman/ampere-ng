@@ -451,8 +451,8 @@ describe('App', function () {
       Ampere.domain(null, domain=>{
         domain.createModule(null, module=>{
           const symbols = Object.getOwnPropertySymbols(options);
-          for (let key in symbols) {
-            let symbol = symbols[key];
+          for (let symbol of symbols) {
+            console.log(`${symbol.toString()}=${options[symbol]}`);
             module.options[symbol]=options[symbol];
           }
 
@@ -1125,7 +1125,7 @@ describe('App', function () {
     });
   });
 
-  let comment = `
+  `
   describe('functor', ()=>{
     let domain;
     beforeEach(()=>{

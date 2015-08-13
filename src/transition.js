@@ -1,8 +1,7 @@
 import Logger from './logger';
-Logger('transition').info( "loaded");
+Logger('transition').info('loaded');
 
-import Base from "./base";
-import Constants from "./constants";
+import Base from './base';
 
 const defaultTransaction = (transition,...args)=>{
     let undo, redo=()=>undo;
@@ -26,7 +25,7 @@ export default class Transition extends Base {
     */
   constructor(view, name:string, cb:Function, targetViewOrCb) {
       // manual type assertion
-    if(view instanceof View) {
+    if (view instanceof View) {
       assert.argumentTypes(view, View, name, $traceurRuntime.type.string, cb, Function, targetViewOrCb, View);
     } else {
       assert.argumentTypes(view, Module, name, $traceurRuntime.type.string, cb, Function, targetViewOrCb, targetViewOrCb instanceof View ? View : Function);
@@ -34,14 +33,14 @@ export default class Transition extends Base {
 
     super(name, 'transition', view.options);
 
-    if(view instanceof View) {
+    if (view instanceof View) {
       Object.defineProperties(this, {
         'view' : {
           value    : view,
           writable : false
         },
       });
-    } else if(view instanceof Module) {
+    } else if (view instanceof Module) {
       let module = view;
       Object.defineProperties(this, {
         'module' : {
@@ -66,7 +65,7 @@ export default class Transition extends Base {
       'disabled' : {
         set      : disabled=>{
             // optimiziation : if disabled is a function
-          if(typeof(disabled)==='function') {
+          if (typeof(disabled)==='function') {
               // wrap it in a function doing the reuest everytime new
             _disabled = ()=>{
               return new Promise((resolve, reject)=>{
@@ -120,5 +119,5 @@ export default class Transition extends Base {
   }
 }
 
-import View from "./view";
-import Module from "./module";
+import View from './view';
+import Module from './module';

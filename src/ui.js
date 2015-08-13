@@ -2,8 +2,8 @@
 
 var Ui = {
   findOption(optionKey, object:Base, traversalProperties=[]) {
-    if(!traversalProperties) {
-      switch(object.type) {
+    if (!traversalProperties) {
+      switch (object.type) {
         case 'transition' :
           traversalProperties = ['target'/*, 'state'*/];
           break;
@@ -27,76 +27,76 @@ var Ui = {
 
     let value;
 
-    if(hasOwnMember(object.options || object, optionKey)) {
+    if (hasOwnMember(object.options || object, optionKey)) {
       value = (object.options || object)[optionKey];
     } else {
-      if(object.type==='transition') {
-        if(optionKey===Ui.CAPTION && object.name!==Ui.DEFAULT) {
+      if (object.type==='transition') {
+        if (optionKey===Ui.CAPTION && object.name!==Ui.DEFAULT) {
           value=object.name;
-        } else if(traversalProperties.indexOf('target')!==-1) {
+        } else if (traversalProperties.indexOf('target')!==-1) {
           object = object.target;
         } else {
           object = {};
         }
       }
 
-      if(object.type==='view') {
-        if(hasOwnMember(object.options, optionKey)) {
+      if (object.type==='view') {
+        if (hasOwnMember(object.options, optionKey)) {
           value = object.options[optionKey];
-        } else if(traversalProperties.indexOf('state')!=-1) {
+        } else if (traversalProperties.indexOf('state')!=-1) {
           object = object.state;
         } else {
           object = {};
         }
       }
 
-      if(object.type==='state') {
-        if(hasOwnMember(object.options, optionKey)) {
+      if (object.type==='state') {
+        if (hasOwnMember(object.options, optionKey)) {
           value = object.options[optionKey];
-        } else if(traversalProperties.indexOf('app')!=-1) {
+        } else if (traversalProperties.indexOf('app')!=-1) {
           object = object.module.app;
         } else {
           object = {};
         }
       }
 
-      if(object.type==='app') {
-        if(hasOwnMember(object.options, optionKey)) {
+      if (object.type==='app') {
+        if (hasOwnMember(object.options, optionKey)) {
           value = object.options[optionKey];
-        } else if(traversalProperties.indexOf('module')!=-1) {
+        } else if (traversalProperties.indexOf('module')!=-1) {
           object = object.view.state.module;
         } else {
           object = {};
         }
       }
 
-      if(object.type==='module') {
-        if(hasOwnMember(object.options, optionKey)) {
+      if (object.type==='module') {
+        if (hasOwnMember(object.options, optionKey)) {
           value = object.options[optionKey];
-        } else if(traversalProperties.indexOf('domain')!=-1) {
+        } else if (traversalProperties.indexOf('domain')!=-1) {
           object = object.domain;
         } else {
           object = {};
         }
       }
 
-      if(object.type==='domain') {
-        if(hasOwnMember(object.options, optionKey)) {
+      if (object.type==='domain') {
+        if (hasOwnMember(object.options, optionKey)) {
           value = object.options[optionKey];
-        } else if(traversalProperties.indexOf('Ampere')!=-1) {
+        } else if (traversalProperties.indexOf('Ampere')!=-1) {
           object = object.Ampere;
         } else {
           object = {};
         }
       }
 
-      if(object.type==='Ampere') {
+      if (object.type==='Ampere') {
         value = object.options[optionKey];
       } else {
         object = {};
       }
 
-      if(value===undefined) {
+      if (value===undefined) {
         object = object.options || object;
         value = object[optionKey] || object.name;
       }
@@ -189,9 +189,7 @@ Object.defineProperties(Ui, {
 
 export default Ui;
 
-import Contants from "./constants";
-
-let obsolete= `
+`
     /**
      transition option hinting the occurrence of the transition. can be one of
      * 'global' transition should be rendered in the global transition list. this is the default for module transitions

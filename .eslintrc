@@ -26,7 +26,7 @@ rules:
       // strict === false allows use of eslint unknown features from es7 (named params for example)
     strict : 0
     
-    brace-style: [1, "1tbs"]
+    brace-style: 0
     comma-style: [2, "last"]
     default-case: 2
     //func-style: [2, ["declaration", "expression"]]

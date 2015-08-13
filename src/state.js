@@ -1,13 +1,13 @@
 import Logger from './logger';
-Logger('state').info( "loaded");
+Logger('state').info('loaded');
 
-import Constants from "./constants";
-import Base from "./base";
+import Constants from './constants';
+import Base from './base';
 
 /**
   State represents a conrete state of an application.
   A state in conjunction with a View can be seen as a concrete
-  "screen" of an application.
+  'screen' of an application.
 
   States can be connected to other states by transitions.
 */
@@ -51,7 +51,7 @@ export default class State extends Base {
   createView(name:string, createViewCb:Function) {
     this.assert(!this.module.app, `createView(...) : You cannot create views after state module is in use by an app`);
 
-    if(typeof(name)!=='string') {
+    if (typeof(name)!=='string') {
       this.log( `createState() : name argument(='${name}') is not a string -> reset name to Constants.DEFAULT`);
       name = Constants.DEFAULT;
     }
@@ -64,6 +64,5 @@ export default class State extends Base {
   }
 }
 
-import Module from "./module";
-import View from "./view";
-import {_getNamespace} from "./util";
+import Module from './module';
+import View from './view';
