@@ -12,8 +12,8 @@ describe('Base', function () {
   it('instanceof/type Base', ()=>{
     let mock = new Mock();
 
-    expect(mock instanceof Mock).toBe( true);
-    expect(mock instanceof Base).toBe( true);
+    expect(mock instanceof Mock).toBe(true);
+    expect(mock instanceof Base).toBe(true);
     expect(mock.type).toBe('mock');
   });
 
@@ -21,41 +21,41 @@ describe('Base', function () {
     let parent = new Mock('foo');
     let mock = new Mock('bar', undefined, parent.options);
 
-    expect(mock.name).toEqual( 'bar');
-    expect(parent.options[Ampere.NAMESPACE]).toEqual( '["foo"]');
-    expect(mock.options[Ampere.NAMESPACE]).toEqual( '["foo"].["bar"]');
+    expect(mock.name).toEqual('bar');
+    expect(parent.options[Ampere.NAMESPACE]).toEqual('["foo"]');
+    expect(mock.options[Ampere.NAMESPACE]).toEqual('["foo"].["bar"]');
   });
 
   it('assert()', ()=>{
     let mock = new Mock();
 
     let message=undefined;
-    try {  mock.assert( 3+4);  } catch( e) { message=e.message; }
+    try {  mock.assert(3+4);  } catch(e) { message=e.message; }
     expect(message).toEqual(undefined);
 
     message=undefined;
-    try {  mock.assert( false);  } catch( e) { message=e.message; }
+    try {  mock.assert(false);  } catch(e) { message=e.message; }
     expect(message).toEqual(`[mock:[default]] : assert(...) failed`);
 
     message=undefined;
-    try {  mock.assert( false, 'something went wrong');  } catch( e) { message=e.message; }
+    try {  mock.assert(false, 'something went wrong');  } catch(e) { message=e.message; }
     expect(message).toEqual(`[mock:[default]] : something went wrong`);
 
     message=undefined;
-    try {  mock.assert(()=>null===true, 'something went wrong');  } catch( e) { message=e.message; }
+    try {  mock.assert(()=>null===true, 'something went wrong');  } catch(e) { message=e.message; }
     expect(message).toEqual(`[mock:[default]] : something went wrong`);
 
       // test msg closure gets called when condition evaluates to false
     try {
       mock.assert(()=>null===true, ()=>'i was called');
-    } catch( e) { message=e.message; }
+    } catch(e) { message=e.message; }
     expect(message).toEqual(`[mock:[default]] : i was called`);
 
       // test msg closure gets NOT called when condition evaluates to true
     try {
       var called=false;
       mock.assert(()=>true===true, ()=>called=true && 'i was called');
-    } catch( e) { message=e.message; }
+    } catch(e) { message=e.message; }
     expect(called).toBe(false);
   });
 

@@ -4,14 +4,14 @@ import Constants from '../src/constants';
 
 describe('Transition', ()=>{
   it('instanceof/type Transition', done=>{
-    Ampere.domain(null,domain=>{
-      domain.createModule(null, module=>{
-        module.createState(null, state=>{
-          state.createView(null, view=>{
+    Ampere.domain(Constants.DEFAULT,domain=>{
+      domain.createModule(Constants.DEFAULT, module=>{
+        module.createState(Constants.DEFAULT, state=>{
+          state.createView(Constants.DEFAULT, view=>{
             view.createTemplate('mytemplate');
 
-            view.createTransition(null, transition=>{
-              expect(transition instanceof Transition).toBe( true);
+            view.createTransition(Constants.DEFAULT, transition=>{
+              expect(transition instanceof Transition).toBe(true);
               expect(transition.type).toBe('transition');
               done();
             });
@@ -22,13 +22,13 @@ describe('Transition', ()=>{
   });
 
   it('default name', done=>{
-    Ampere.domain(null,domain=>{
-      domain.createModule(null, module=>{
-        module.createState(null, state=>{
-          state.createView(null, view=>{
+    Ampere.domain(Constants.DEFAULT,domain=>{
+      domain.createModule(Constants.DEFAULT, module=>{
+        module.createState(Constants.DEFAULT, state=>{
+          state.createView(Constants.DEFAULT, view=>{
             view.createTemplate('mytemplate');
 
-            view.createTransition(null, transition=>{
+            view.createTransition(Constants.DEFAULT, transition=>{
               expect(transition.name).toBe(Constants.DEFAULT);
               done();
             });
@@ -39,10 +39,10 @@ describe('Transition', ()=>{
   });
 
   it('name', done=>{
-    Ampere.domain(null,domain=>{
-      domain.createModule(null, module=>{
-        module.createState(null, state=>{
-          state.createView(null, view=>{
+    Ampere.domain(Constants.DEFAULT,domain=>{
+      domain.createModule(Constants.DEFAULT, module=>{
+        module.createState(Constants.DEFAULT, state=>{
+          state.createView(Constants.DEFAULT, view=>{
             view.createTemplate('mytemplate');
 
             view.createTransition('foo', transition=>{
@@ -56,13 +56,13 @@ describe('Transition', ()=>{
   });
 
   it('view', done=>{
-    Ampere.domain(null,domain=>{
-      domain.createModule(null, module=>{
-        module.createState(null, state=>{
-          state.createView(null, view=>{
+    Ampere.domain(Constants.DEFAULT,domain=>{
+      domain.createModule(Constants.DEFAULT, module=>{
+        module.createState(Constants.DEFAULT, state=>{
+          state.createView(Constants.DEFAULT, view=>{
             view.createTemplate('mytemplate');
 
-            view.createTransition(null, transition=>{
+            view.createTransition(Constants.DEFAULT, transition=>{
               expect(transition.view).toBe(view);
               done();
             });
@@ -74,13 +74,13 @@ describe('Transition', ()=>{
 
   describe('disabled', ()=>{
     it('default(disabled===false)', done=>{
-      Ampere.domain(null,domain=>{
-        domain.createModule(null, module=>{
-          module.createState(null, state=>{
-            state.createView(null, view=>{
+      Ampere.domain(Constants.DEFAULT,domain=>{
+        domain.createModule(Constants.DEFAULT, module=>{
+          module.createState(Constants.DEFAULT, state=>{
+            state.createView(Constants.DEFAULT, view=>{
               view.createTemplate('mytemplate');
 
-              view.createTransition(null, transition=>{
+              view.createTransition(Constants.DEFAULT, transition=>{
                 transition.disabled.then(value=>{
                   expect(value).toBe(false);
                   done();
@@ -93,13 +93,13 @@ describe('Transition', ()=>{
     });
 
     it('set disabled to static value', done=>{
-      Ampere.domain(null,domain=>{
-        domain.createModule(null, module=>{
-          module.createState(null, state=>{
-            state.createView(null, view=>{
+      Ampere.domain(Constants.DEFAULT,domain=>{
+        domain.createModule(Constants.DEFAULT, module=>{
+          module.createState(Constants.DEFAULT, state=>{
+            state.createView(Constants.DEFAULT, view=>{
               view.createTemplate('mytemplate');
 
-              view.createTransition(null, (async function(transition) {
+              view.createTransition(Constants.DEFAULT, (async function(transition) {
                 transition.disabled = true;
 
                 let val2 = await transition.disabled;
@@ -118,13 +118,13 @@ describe('Transition', ()=>{
     });
 
     it('set disabled to promise', done=>{
-      Ampere.domain(null,domain=>{
-        domain.createModule(null, module=>{
-          module.createState(null, state=>{
-            state.createView(null, view=>{
+      Ampere.domain(Constants.DEFAULT,domain=>{
+        domain.createModule(Constants.DEFAULT, module=>{
+          module.createState(Constants.DEFAULT, state=>{
+            state.createView(Constants.DEFAULT, view=>{
               view.createTemplate('mytemplate');
 
-              view.createTransition(null, (async function(transition) {
+              view.createTransition(Constants.DEFAULT, (async function(transition) {
                 const MESSAGE = 'wrong input';
                 transition.disabled = Promise.resolve(MESSAGE);
 
@@ -149,13 +149,13 @@ describe('Transition', ()=>{
     });
 
     it('set disabled to function', done=>{
-      Ampere.domain(null,domain=>{
-        domain.createModule(null, module=>{
-          module.createState(null, state=>{
-            state.createView(null, view=>{
+      Ampere.domain(Constants.DEFAULT,domain=>{
+        domain.createModule(Constants.DEFAULT, module=>{
+          module.createState(Constants.DEFAULT, state=>{
+            state.createView(Constants.DEFAULT, view=>{
               view.createTemplate('mytemplate');
 
-              view.createTransition(null, (async function(transition){
+              view.createTransition(Constants.DEFAULT, (async function(transition){
                 let retval = 1000;
                 transition.disabled = transition=>retval;
 
@@ -167,7 +167,7 @@ describe('Transition', ()=>{
                 expect(!!val2).toBe(false);
 
                 transition.disabled=(_transition)=>{
-                  expect(_transition).toBe( transition);
+                  expect(_transition).toBe(transition);
                   return ['foo', 'bar'];
                 };
                 let val3 = await transition.disabled;
@@ -183,13 +183,13 @@ describe('Transition', ()=>{
   });
 
   it('transaction', done=>{
-    Ampere.domain(null,domain=>{
-      domain.createModule(null, module=>{
-        module.createState(null, state=>{
-          state.createView(null, view=>{
+    Ampere.domain(Constants.DEFAULT,domain=>{
+      domain.createModule(Constants.DEFAULT, module=>{
+        module.createState(Constants.DEFAULT, state=>{
+          state.createView(Constants.DEFAULT, view=>{
             view.createTemplate('mytemplate');
 
-            view.createTransition(null, (async function(transition) {
+            view.createTransition(Constants.DEFAULT, (async function(transition) {
                 // transaction should have transition as first parameter and given parameters at call as rest
               transition.transaction = (transition,...args)=>{ return {transition, args}};
               let val2 = await transition.transaction('hello', 'world');
@@ -204,16 +204,16 @@ describe('Transition', ()=>{
   });
 
   it('namespace', done=>{
-    Ampere.domain(null,domain=>{
+    Ampere.domain(Constants.DEFAULT,domain=>{
       domain.createModule('mymodule', module=>{
         module.createState('foo', state=>{
-          state.createView(null, view=>{
+          state.createView(Constants.DEFAULT, view=>{
             view.createTemplate('mytemplate');
 
             view.createTransition('foo', transition=>{
               expect(transition.options[Ampere.NAME]).toEqual(transition.name);
                 // namespace===[domain.name].[module.name].[state.name].[transition.name] for ampere views
-              expect(transition.options[Ampere.NAMESPACE]).toEqual( `["Ampere"].[default].[${JSON.stringify(module.name)}].[${JSON.stringify(state.name)}].[default].[${JSON.stringify(transition.name)}]`);
+              expect(transition.options[Ampere.NAMESPACE]).toEqual(`["Ampere"].[default].[${JSON.stringify(module.name)}].[${JSON.stringify(state.name)}].[default].[${JSON.stringify(transition.name)}]`);
               done();
             });
           });
@@ -223,10 +223,10 @@ describe('Transition', ()=>{
   });
 
   it('options', done=>{
-    Ampere.domain(null,domain=>{
-      domain.createModule(null, module=>{
-        module.createState(null, state=>{
-          state.createView(null, view=>{
+    Ampere.domain(Constants.DEFAULT,domain=>{
+      domain.createModule(Constants.DEFAULT, module=>{
+        module.createState(Constants.DEFAULT, state=>{
+          state.createView(Constants.DEFAULT, view=>{
             view.createTemplate('mytemplate');
 
             view.createTransition('foo', transition=>{

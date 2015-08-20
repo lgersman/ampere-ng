@@ -20,10 +20,10 @@ function assert(condition, msg) {
     msg = msg || 'assert(...) failed';
   }
 
-  if( !condition) {
+  if(!condition) {
     (typeof(msg)=='function') && (msg = msg());
 
-    throw new Error( `util : ${msg}`);
+    throw new Error(`util : ${msg}`);
   }
 
   return this;
@@ -41,7 +41,7 @@ function spawn(generator) {
       },
       (ex)=>{
         iter.throw(ex);
-        return Promise.reject( ex);
+        return Promise.reject(ex);
       }
     );
   });
@@ -71,45 +71,9 @@ function spawn(generatorFunc) {
   return onFulfilled();
 }
 
-/*
-let unPromisify = (function() {
-  let run = (generator)=>{
-    let iter, resume = (function(promise:Promise) {
-      return promise.then(
-        (result)=>{
-          iter.next(result);
-          return result;
-        },
-        (ex)=>{
-          iter.throw(ex);
-          return Promise.reject( ex);
-        }
-      );
-    }).bind(this);
-
-    return iter=generator(resume);
-  };
-
-  return function unPromisify(promise:Promise) {
-    let iter = run(function*generator(resume) {
-      console.log('before');
-      var result = yield resume(promise);
-      console.log('result = ' + result);
-    });
-
-    debugger
-    for(let result of iter) {
-      return result;
-    }
-  }
-})();
-*/
-
 export {
   _getNamespace,
   spawn
-  /*,
-  unPromisify*/
 };
 
 import Base from './base';

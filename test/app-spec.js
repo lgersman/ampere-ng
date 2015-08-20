@@ -3,113 +3,113 @@ import {spawn} from '../src/util';
 import Constants from '../src/constants';
 
 describe('App', function () {
-  describe( 'property promise', ()=>{
+  describe('property promise', ()=>{
     describe('resolves automatically when', ()=>{
-      it( 'no constructor callback is given', done=>{
-        let domain = Ampere.domain(null, domain=>
-          domain.createModule(null, module=>
-            module.createState(null, state=>
-              state.createView(null, view=>view.createTemplate('mytemplate'))
+      it('no constructor callback is given', done=>{
+        let domain = Ampere.domain(Constants.DEFAULT, domain=>
+          domain.createModule(Constants.DEFAULT, module=>
+            module.createState(Constants.DEFAULT, state=>
+              state.createView(Constants.DEFAULT, view=>view.createTemplate('mytemplate'))
             )
           )
         );
 
         let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT]);
-        app.promise.then( done);
+        app.promise.then(done);
       });
 
-      it( 'constructor callback returns not-a-promise', done=>{
-        let domain = Ampere.domain(null, domain=>
-          domain.createModule(null, module=>
-            module.createState(null, state=>
-              state.createView(null, view=>view.createTemplate('mytemplate'))
+      it('constructor callback returns not-a-promise', done=>{
+        let domain = Ampere.domain(Constants.DEFAULT, domain=>
+          domain.createModule(Constants.DEFAULT, module=>
+            module.createState(Constants.DEFAULT, state=>
+              state.createView(Constants.DEFAULT, view=>view.createTemplate('mytemplate'))
             )
           )
         );
 
         let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT], (app)=>'foo');
         app.promise.then(cb_retval=>{
-          expect(cb_retval).toBe( 'foo');
+          expect(cb_retval).toBe('foo');
           done();
         });
       });
 
       it('constructor callback returns a resolved promise', done=>{
-        let domain = Ampere.domain(null, domain=>
-          domain.createModule(null, module=>
-            module.createState(null, state=>state.createView(null, view=>view.createTemplate('mytemplate')))
+        let domain = Ampere.domain(Constants.DEFAULT, domain=>
+          domain.createModule(Constants.DEFAULT, module=>
+            module.createState(Constants.DEFAULT, state=>state.createView(Constants.DEFAULT, view=>view.createTemplate('mytemplate')))
           )
         );
 
         let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT], (app)=>Promise.resolve('foo'));
         app.promise.then(cb_retval=>{
-          expect( cb_retval).toBe( 'foo');
+          expect(cb_retval).toBe('foo');
           done();
         });
       });
     });
 
     describe('rejects automatically when', ()=>{
-      it( 'domain.promise rejects',(done)=>{
-        let domain = Ampere.domain(null, domain=>{
-          domain.createModule(null, module=>{
-            module.createState(null, state=>
-              state.createView(null, view=>view.createTemplate('mytemplate'))
+      it('domain.promise rejects',(done)=>{
+        let domain = Ampere.domain(Constants.DEFAULT, domain=>{
+          domain.createModule(Constants.DEFAULT, module=>{
+            module.createState(Constants.DEFAULT, state=>
+              state.createView(Constants.DEFAULT, view=>view.createTemplate('mytemplate'))
             );
           })
-          throw new Error( 'foo');
+          throw new Error('foo');
         });
 
         let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT]);
-        app.promise.catch( ex=>{
+        app.promise.catch(ex=>{
           done();
         })
       });
 
-      it( 'module.promise rejects',(done)=>{
-        let domain = Ampere.domain(null, domain=>{
-          domain.createModule(null, module=>{
-            module.createState(null, state=>
-              state.createView(null, view=>view.createTemplate('mytemplate'))
+      it('module.promise rejects',(done)=>{
+        let domain = Ampere.domain(Constants.DEFAULT, domain=>{
+          domain.createModule(Constants.DEFAULT, module=>{
+            module.createState(Constants.DEFAULT, state=>
+              state.createView(Constants.DEFAULT, view=>view.createTemplate('mytemplate'))
             );
 
-            throw new Error( 'foo');
+            throw new Error('foo');
           })
         });
 
         let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT]);
-        app.promise.catch( ex=>{
-          expect( ex.message).toBe( 'foo');
+        app.promise.catch(ex=>{
+          expect(ex.message).toBe('foo');
           done();
         })
       });
 
-      it( 'one of the module states rejects or the view argument rejects',(done)=>{
-        let domain = Ampere.domain(null, domain=>{
-          domain.createModule(null, module=>{
-            module.createState(null, state=>{
-              state.createView(null, view=>view.createTemplate('mytemplate'));
+      it('one of the module states rejects or the view argument rejects',(done)=>{
+        let domain = Ampere.domain(Constants.DEFAULT, domain=>{
+          domain.createModule(Constants.DEFAULT, module=>{
+            module.createState(Constants.DEFAULT, state=>{
+              state.createView(Constants.DEFAULT, view=>view.createTemplate('mytemplate'));
             });
 
             module.createState('rejected', state=>{
-              state.createView(null, view=>view.createTemplate('mytemplate'));
-              throw new Error( 'foo');
+              state.createView(Constants.DEFAULT, view=>view.createTemplate('mytemplate'));
+              throw new Error('foo');
             });
           })
         });
 
         let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT]);
-        app.promise.catch( ex=>{
-          expect(ex.message).toBe( 'foo');
+        app.promise.catch(ex=>{
+          expect(ex.message).toBe('foo');
           done();
         })
       });
 
-      it( 'view constructor callback rejects',(done)=>{
-        let domain = Ampere.domain(null, domain=>{
-          domain.createModule(null, module=>{
-            module.createState(null, state=>{
-              state.createView(null, view=>{
+      it('view constructor callback rejects',(done)=>{
+        let domain = Ampere.domain(Constants.DEFAULT, domain=>{
+          domain.createModule(Constants.DEFAULT, module=>{
+            module.createState(Constants.DEFAULT, state=>{
+              state.createView(Constants.DEFAULT, view=>{
                 view.createTemplate('mytemplate');
                 throw new Error('foo');
               });
@@ -121,38 +121,38 @@ describe('App', function () {
 
         let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT]);
         app.promise.catch(ex=>{
-          expect(ex.message).toBe( 'foo');
+          expect(ex.message).toBe('foo');
           done();
         });
       });
 
-      it( 'a module transition rejects',(done)=>{
-        let domain = Ampere.domain(null, domain=>{
-          domain.createModule(null, module=>{
+      it('a module transition rejects',(done)=>{
+        let domain = Ampere.domain(Constants.DEFAULT, domain=>{
+          domain.createModule(Constants.DEFAULT, module=>{
             let view;
-            module.createState(null, state=>{
-              view = state.createView(null, view=>view.createTemplate);
+            module.createState(Constants.DEFAULT, state=>{
+              view = state.createView(Constants.DEFAULT, view=>view.createTemplate);
             });
 
-            module.createTransition(null, transition=>{throw new Error('foo');}, view);
+            module.createTransition(Constants.DEFAULT, transition=>{throw new Error('foo');}, view);
           })
         });
 
         let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT]);
         app.promise.catch(ex=>{
-          expect(ex.message).toBe( 'foo');
+          expect(ex.message).toBe('foo');
           done();
         });
       });
 
-      it( 'a view transition rejects',(done)=>{
-        let domain = Ampere.domain(null, domain=>{
-          domain.createModule(null, module=>{
-            module.createState(null, state=>{
-              state.createView(null, view=>{
+      it('a view transition rejects',(done)=>{
+        let domain = Ampere.domain(Constants.DEFAULT, domain=>{
+          domain.createModule(Constants.DEFAULT, module=>{
+            module.createState(Constants.DEFAULT, state=>{
+              state.createView(Constants.DEFAULT, view=>{
                 view.createTemplate('mytemplate');
 
-                view.createTransition(null, transition=>{throw new Error('foo');});
+                view.createTransition(Constants.DEFAULT, transition=>{throw new Error('foo');});
               });
             });
           })
@@ -160,7 +160,7 @@ describe('App', function () {
 
         let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT]);
         app.promise.catch(ex=>{
-          expect(ex.message).toBe( 'foo');
+          expect(ex.message).toBe('foo');
           done();
         });
       });
@@ -171,13 +171,13 @@ describe('App', function () {
   describe('execute(transition)', ()=>{
     function createMockApp(transitionCb:Function=()=>{}) {
       let view;
-      Ampere.domain(null, domain=>{
-        domain.createModule(null, module=>{
-          module.createState(null, state=>{
-            view = state.createView(null, view=>{
+      Ampere.domain(Constants.DEFAULT, domain=>{
+        domain.createModule(Constants.DEFAULT, module=>{
+          module.createState(Constants.DEFAULT, state=>{
+            view = state.createView(Constants.DEFAULT, view=>{
               view.createTemplate('mytemplate');
 
-              view.createTransition(null,transitionCb);
+              view.createTransition(Constants.DEFAULT,transitionCb);
             });
           });
         })
@@ -190,13 +190,13 @@ describe('App', function () {
       let app = createMockApp(),
           otherStatesTransition
       ;
-      Ampere.domain(null, domain=>{
-        domain.createModule(null, module=>{
-          module.createState(null, state=>{
-            view = state.createView(null, view=>{
+      Ampere.domain(Constants.DEFAULT, domain=>{
+        domain.createModule(Constants.DEFAULT, module=>{
+          module.createState(Constants.DEFAULT, state=>{
+            view = state.createView(Constants.DEFAULT, view=>{
               view.createTemplate('mytemplate');
 
-              otherStatesTransition = view.createTransition(null,transitionCb,target);
+              otherStatesTransition = view.createTransition(Constants.DEFAULT,transitionCb,target);
             });
           });
         })
@@ -448,21 +448,20 @@ describe('App', function () {
   describe('history', ()=>{
     let createMockModuleView = function(options={}) {
       let view;
-      Ampere.domain(null, domain=>{
-        domain.createModule(null, module=>{
+      Ampere.domain(Constants.DEFAULT, domain=>{
+        domain.createModule(Constants.DEFAULT, module=>{
           const symbols = Object.getOwnPropertySymbols(options);
           for (let symbol of symbols) {
-            console.log(`${symbol.toString()}=${options[symbol]}`);
             module.options[symbol]=options[symbol];
           }
 
-          module.createState(null, state=>{
+          module.createState(Constants.DEFAULT, state=>{
             let target = state.createView('target', view=>view.createTemplate);
 
-            view = state.createView(null, view=>{
+            view = state.createView(Constants.DEFAULT, view=>{
               view.createTemplate('mytemplate');
 
-              view.createTransition(null,transition=>{},target);
+              view.createTransition(Constants.DEFAULT,transition=>{},target);
             });
           });
         })
@@ -521,13 +520,13 @@ describe('App', function () {
         let createMockModuleView = function() {
           let view;
 
-          Ampere.domain(null, domain=>{
-            domain.createModule(null, module=>{
+          Ampere.domain(Constants.DEFAULT, domain=>{
+            domain.createModule(Constants.DEFAULT, module=>{
               module.createState('inc', state=>{
                 state.counter=0,
                 state.params = [];
 
-                view = state.createView(null, view=>{
+                view = state.createView(Constants.DEFAULT, view=>{
                   view.createTemplate('mytemplate');
 
                   view.createTransition('immediate_immediate',transition=>{
@@ -600,7 +599,8 @@ describe('App', function () {
         it('immediate_promise', done=>{
           let app = Ampere.app(createMockModuleView());
 
-          app.execute(app.view.transitions.immediate_promise, ...PARAMS).then(()=>{
+          app.execute(app.view.transitions.immediate_promise, ...PARAMS)
+          .then(()=>{
             expect(app.view.state.counter).toBe(2);
             expect(app.view.state.params).toEqual(PARAMS);
             done();
@@ -632,10 +632,10 @@ describe('App', function () {
         let createMockModuleView = function() {
           let view;
 
-          Ampere.domain(null, domain=>{
-            domain.createModule(null, module=>{
+          Ampere.domain(Constants.DEFAULT, domain=>{
+            domain.createModule(Constants.DEFAULT, module=>{
               module.createState('inc', state=>{
-                view = state.createView(null, view=>{
+                view = state.createView(Constants.DEFAULT, view=>{
                   view.createTemplate('mytemplate');
 
                   view.createTransition('immediate',transition=>{
@@ -686,10 +686,10 @@ describe('App', function () {
         let createMockModuleView = function() {
           let view;
 
-          Ampere.domain(null, domain=>{
-            domain.createModule(null, module=>{
+          Ampere.domain(Constants.DEFAULT, domain=>{
+            domain.createModule(Constants.DEFAULT, module=>{
               module.createState('inc', state=>{
-                view = state.createView(null, view=>{
+                view = state.createView(Constants.DEFAULT, view=>{
                   view.createTemplate('mytemplate');
 
                   view.createTransition('immediate',transition=>{
@@ -737,10 +737,10 @@ describe('App', function () {
         let createMockModuleView = function() {
           let view;
 
-          Ampere.domain(null, domain=>{
-            domain.createModule(null, module=>{
+          Ampere.domain(Constants.DEFAULT, domain=>{
+            domain.createModule(Constants.DEFAULT, module=>{
               module.createState('inc', state=>{
-                view = state.createView(null, view=>{
+                view = state.createView(Constants.DEFAULT, view=>{
                   view.createTemplate('mytemplate');
 
                   view.createTransition('immediate',transition=>{
@@ -790,10 +790,10 @@ describe('App', function () {
         let createMockModuleView = function() {
           let view;
 
-          Ampere.domain(null, domain=>{
-            domain.createModule(null, module=>{
+          Ampere.domain(Constants.DEFAULT, domain=>{
+            domain.createModule(Constants.DEFAULT, module=>{
               module.createState('inc', state=>{
-                view = state.createView(null, view=>{
+                view = state.createView(Constants.DEFAULT, view=>{
                   view.createTemplate('mytemplate');
 
                   view.createTransition('immediate_immediate',transition=>{
@@ -882,8 +882,8 @@ describe('App', function () {
         let createMockModule = function() {
           let module;
 
-          Ampere.domain(null, domain=>{
-            module = domain.createModule(null, module=>{
+          Ampere.domain(Constants.DEFAULT, domain=>{
+            module = domain.createModule(Constants.DEFAULT, module=>{
               module.createState('s', state=>{
                 state.value = 'a';
 
@@ -1033,13 +1033,13 @@ describe('App', function () {
         let createMockModuleView = function() {
           let view;
 
-          Ampere.domain(null, domain=>{
-            domain.createModule(null, module=>{
-              module.createState(null, state=>{
+          Ampere.domain(Constants.DEFAULT, domain=>{
+            domain.createModule(Constants.DEFAULT, module=>{
+              module.createState(Constants.DEFAULT, state=>{
                   // will be used by the tests to control when undo and redo return
                 state.fn = null;
 
-                view = state.createView(null, view=>{
+                view = state.createView(Constants.DEFAULT, view=>{
                   view.createTemplate('mytemplate');
 
                   view.createTransition('go',transition=>{
@@ -1129,10 +1129,10 @@ describe('App', function () {
   describe('functor', ()=>{
     let domain;
     beforeEach(()=>{
-      domain = Ampere.domain(null, domain=>
-        domain.createModule(null, module=>
-          module.createState(null, state=>{
-            state.createView(null, view=>{
+      domain = Ampere.domain(Constants.DEFAULT, domain=>
+        domain.createModule(Constants.DEFAULT, module=>
+          module.createState(Constants.DEFAULT, state=>{
+            state.createView(Constants.DEFAULT, view=>{
               view.createTemplate('mytemplate');
             });
 
@@ -1159,11 +1159,11 @@ describe('App', function () {
     it('instanceof App/Base, typeof 'function'', ()=>{
       let app = Ampere.app(domain.modules[Constants.DEFAULT].states[Constants.DEFAULT].views[Constants.DEFAULT]);
 
-      expect(app instanceof App).toBe( true);
-      expect(app instanceof Base).toBe( true);
+      expect(app instanceof App).toBe(true);
+      expect(app instanceof Base).toBe(true);
         // would be nice but i have an idea how to do it ...
-        // expect(app instanceof Function).toBe( true);
-      // expect(typeof(app)=='function').toBe( true);
+        // expect(app instanceof Function).toBe(true);
+      // expect(typeof(app)=='function').toBe(true);
     });
 
     it('should be invokable with iterator<promise> as argument', done=>{
@@ -1260,7 +1260,7 @@ describe('App', function () {
                   trigger('c', {'some' : 'other data'})
                 ];
 
-                while( eventQueue.length) {
+                while(eventQueue.length) {
                   var uiTask = eventQueue.pop();
                 }
 

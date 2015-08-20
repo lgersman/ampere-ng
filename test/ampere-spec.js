@@ -1,8 +1,8 @@
-import Ampere from '../src/ampere';
+//import Ampere from '../src/ampere';
 
 describe('Ampere', ()=>{
   /*
-  it( "dummy", done=>{
+  it("dummy", done=>{
     done();
   });
   */

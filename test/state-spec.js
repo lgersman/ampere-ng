@@ -4,10 +4,10 @@ import Constants from '../src/constants';
 
 describe('State', function () {
   it('instanceof/type State', done=>{
-    Ampere.domain(null, domain=>{
-      domain.createModule(null, module=>{
+    Ampere.domain(Constants.DEFAULT, domain=>{
+      domain.createModule(Constants.DEFAULT, module=>{
         module.createState('foo', state=>{
-          state.createView(null, view=>{
+          state.createView(Constants.DEFAULT, view=>{
             view.createTemplate('mytemplate');
           });
 
@@ -20,10 +20,10 @@ describe('State', function () {
   });
 
   it('default name', done=>{
-    Ampere.domain(null, domain=>{
-      domain.createModule(null, module=>{
-        module.createState(null, state=>{
-          state.createView(null, view=>{
+    Ampere.domain(Constants.DEFAULT, domain=>{
+      domain.createModule(Constants.DEFAULT, module=>{
+        module.createState(Constants.DEFAULT, state=>{
+          state.createView(Constants.DEFAULT, view=>{
             view.createTemplate('mytemplate');
           });
 
@@ -35,10 +35,10 @@ describe('State', function () {
   });
 
   it('name', done=>{
-    Ampere.domain(null, domain=>{
-      domain.createModule(null, module=>{
+    Ampere.domain(Constants.DEFAULT, domain=>{
+      domain.createModule(Constants.DEFAULT, module=>{
         module.createState('foo', state=>{
-          state.createView(null, view=>{
+          state.createView(Constants.DEFAULT, view=>{
             view.createTemplate('mytemplate');
           });
 
@@ -50,10 +50,10 @@ describe('State', function () {
   });
 
   it('namespace', done=>{
-    Ampere.domain(null, domain=>{
+    Ampere.domain(Constants.DEFAULT, domain=>{
       domain.createModule('mymodule', module=>{
         module.createState('foo', state=>{
-          state.createView(null, view=>{
+          state.createView(Constants.DEFAULT, view=>{
             view.createTemplate('mytemplate');
           });
 
@@ -68,9 +68,9 @@ describe('State', function () {
 
   describe('state.createView()', ()=>{
     it('view with same name should fail', done=>{
-      Ampere.domain(null, domain=>{
-        domain.createModule(null, module=>{
-          module.createState(null, state=>{
+      Ampere.domain(Constants.DEFAULT, domain=>{
+        domain.createModule(Constants.DEFAULT, module=>{
+          module.createState(Constants.DEFAULT, state=>{
             state.createView('foo', view=>{});
 
             expect(()=>state.createView('foo', view=>{})).toThrow();
@@ -81,12 +81,12 @@ describe('State', function () {
     });
 
     it('view with same name (the default) should fail', done=>{
-      Ampere.domain(null, domain=>{
-        domain.createModule(null, module=>{
-          module.createState(null, state=>{
-            state.createView(null, view=>{});
+      Ampere.domain(Constants.DEFAULT, domain=>{
+        domain.createModule(Constants.DEFAULT, module=>{
+          module.createState(Constants.DEFAULT, state=>{
+            state.createView(Constants.DEFAULT, view=>{});
 
-            expect(()=>state.createView(null, view=>{})).toThrow();
+            expect(()=>state.createView(Constants.DEFAULT, view=>{})).toThrow();
             done();
           });
         });
@@ -95,10 +95,10 @@ describe('State', function () {
   });
 
   it('options', done=>{
-    Ampere.domain(null,domain=>{
-      domain.createModule(null, module=>{
+    Ampere.domain(Constants.DEFAULT,domain=>{
+      domain.createModule(Constants.DEFAULT, module=>{
         module.createState('foo', state=>{
-          state.createView(null, view=>{
+          state.createView(Constants.DEFAULT, view=>{
             view.createTemplate('mytemplate');
           });
 

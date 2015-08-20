@@ -8,8 +8,9 @@ import Transition from './transition';
 
   /**
   * injects setView call into undo/redo function
+  * @param operation function to call or result to wrap
   */
-function wrapOperation(operation:Function, view:View, setView:Function) {
+function wrapOperation(operation/*Function or value*/, view:View, setView:Function) {
   let wrapper = function() {
     let reverseView = view.state.module.app.view;
 
@@ -75,8 +76,8 @@ function defaultExecutor(transition:Transition,setView:Function,...params) {
 export default class App extends Base {
   constructor(view:View, cb:Function=(app)=>{}) {
       // ensure module is not yet associated with an app
-    if (!Object.hasOwnProperty(view.state.module, 'app')) {
-      throw new Error(`module is already associated with app(=${view.state.module.ui.name})`);
+    if (Object.hasOwnProperty(view.state.module, 'app')) {
+      throw new Error(`module is already associated with app(=${view.state.module.app.name})`);
     }
 
     var options = Object.create(view.state.module.options);
@@ -84,7 +85,7 @@ export default class App extends Base {
       // a little hackish : derive namespace from module namespace
       // CURIOUS : for some reason the following will not work since Base declares NAMESPACE via defineProperty :
       // options[Constants.NAMESPACE] = view.state.module.options[Constants.NAMESPACE];
-    Object.defineProperty( options, Constants.NAMESPACE, {
+    Object.defineProperty(options, Constants.NAMESPACE, {
       value : view.state.module.options[Constants.NAMESPACE]
     });
 
@@ -211,48 +212,11 @@ export default class App extends Base {
       this.log(`app is ready(arguments=${JSON.stringify(args)})`);
       return args[0][0];
     }, err=>{
-      //this.log.error( "failed to initialize app : " + err);
-      return Promise.reject( err);
+      //this.log.error("failed to initialize app : " + err);
+      return Promise.reject(err);
     });
 
     this.options[Base._PROMISIFY](onReady);
-
-    `
-      /*
-        now it gets a bit complicated ... the returned object is something special :
-
-        (new App(...)) instanceof App
-        (new App(...)) instanceof Base
-        typeof(new App(...))==='function'
-        we can call any method/property of App & Base : (new App(...)).log("huhu") / (new App(...)).promise.then(...)
-        and finally we can call it itself : (new App(...))( ...)
-      */
-
-      // (1) we create a arrow function
-    let functor = (generator)=>{
-        // ensure argument is a generator function
-      this.assert(generator && generator.constructor && 'GeneratorFunction' == generator.constructor.name, 'functor(generator) : argument expected to be a generator');
-
-      let iter, resume = (function(promise:Promise) {
-        return promise.then(
-          (result)=>{
-            iter.next(result);
-            return result;
-          },
-          (ex)=>{
-            iter.throw(ex);
-            return Promise.reject( ex);
-          }
-        );
-      }).bind(this);
-
-      return iter=generator(resume);
-    };
-      // (2) set its prototype to this App instance
-    typeof(Object.setPrototypeOf)==='function' ? Object.setPrototypeOf(functor, this) : (functor.__proto__=this);
-      // (3) and return it instead of the App instance
-    return functor;
-    `
   }
 }
 

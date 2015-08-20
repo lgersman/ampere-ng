@@ -63,7 +63,7 @@ gulp.task('build', ['prepare'], ()=>{
 );
 
 gulp.task('test:node', [/*'build'*/], ()=>{
-  return shell.task('node test/test-node-specs.js')()
+  return shell.task('node test/test-node-specs.js -v')()
 });
 
 gulp.task('test', ['test:node'], cb=>{

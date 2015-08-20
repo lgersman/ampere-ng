@@ -1,10 +1,10 @@
 let filters = [];
 
-let log = function(priority,logger,args) {
+let log = function(priority,args) {
   if (priority!='log' && console) {
-    for (let filter in filters) {
+    for (let filter of filters) {
       if (filter.test(this.type)) {
-        console[priority].apply(console, [logger.prefix(args[0])]);
+        console[priority].apply(console, [this.prefix(args[0])]);
         break;
       }
     }
@@ -23,17 +23,17 @@ class Log {
   }
 
   info() {
-    log('info',this,arguments);
+    this::log('info',this,arguments);
     return this;
   }
 
   warn() {
-    log('warn',this,arguments);
+    ::this.log('warn',this,arguments);
     return this;
   }
 
   error() {
-    log('error',this,arguments);
+    this::log('error',this,arguments);
     return this;
   }
 

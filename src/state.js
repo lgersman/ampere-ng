@@ -51,11 +51,6 @@ export default class State extends Base {
   createView(name:string, createViewCb:Function) {
     this.assert(!this.module.app, `createView(...) : You cannot create views after state module is in use by an app`);
 
-    if (typeof(name)!=='string') {
-      this.log( `createState() : name argument(='${name}') is not a string -> reset name to Constants.DEFAULT`);
-      name = Constants.DEFAULT;
-    }
-
     this
     .assert(()=>!this.views[name], `view (name='${name}') aleady registered`)
     .log(`register view '${name}'`);

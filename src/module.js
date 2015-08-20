@@ -1,6 +1,5 @@
 import Logger from './logger';
-Logger('module').info( 'loaded');
-import Constants from './constants';
+Logger('module').info('loaded');
 import Base from './base';
 
 /**
@@ -53,16 +52,8 @@ export default class Module extends Base {
   }
 
     // TODO : 2nd argument should be an arrow function with type annotations but traceur failed to compile it
-  createState(name, createStateCb) {
+  createState(name:string, createStateCb:Function) {
     this.assert(!this.app, `createState(...) : You cannot create states after module is in use by an app`);
-
-      // manual type assertion
-    assert.argumentTypes(name, $traceurRuntime.type.string, createStateCb, Function);
-
-    if (typeof(name)!=='string') {
-      this.log(`createStateCb() : name argument(='${name}') is not a string -> reset name to Constants.DEFAULT`);
-      name = Constants.DEFAULT;
-    }
 
     this
     .assert(()=>!this.states[name], `state (name='${name}') aleady registered`)
@@ -86,11 +77,6 @@ export default class Module extends Base {
       '3rd argument expected to be View or function<View>'
     );
 
-    if (typeof(name)!=='string') {
-      this.log( `createTransition() : name argument(='${name}') is not a string -> reset name to Constants.DEFAULT`);
-      name = Constants.DEFAULT;
-    }
-
     this
     .assert(()=>!this.transitions[name], `transition (name='${name}') aleady registered`)
     .log(`register transition '${name}'`);
@@ -99,12 +85,8 @@ export default class Module extends Base {
 
       // manual type assertion
     if (targetView instanceof View) {
-      assert.argumentTypes(name, $traceurRuntime.type.string, createTransitionCb, Function, targetView, View);
-
         // ensure both states are owned by same module
       this.assert(()=>targetView.state.module===this, `target view(name='${targetView.name}') state(name='${targetView.state.name}') is owned by foreign module(name='${targetView.state.module.name}') of domain(name='${targetView.state.module.domain.name}')`)
-    } else {
-      assert.argumentTypes(name, $traceurRuntime.type.string, createTransitionCb, Function, targetView, Function);
     }
 
     return this.transitions[name] = new Transition(this, name, createTransitionCb, targetView);

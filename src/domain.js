@@ -1,6 +1,5 @@
 import Logger from './logger';
 Logger('domain').info('loaded');
-import Constants from './constants';
 import Base from './base';
 
 /**
@@ -31,15 +30,7 @@ export default class Domain extends Base {
   }
 
     // TODO : 2nd argument should be an arrow function with type annotations but traceur failed to compile it
-  createModule(name, createModuleCb) {
-      // manual type assertion
-    assert.argumentTypes(name, $traceurRuntime.type.string, createModuleCb, Function);
-
-    if (typeof(name)!=='string') {
-      this.log(`createModuleCb() : name argument(='${name}') is not a string -> reset name to Constants.DEFAULT`);
-      name = Constants.DEFAULT;
-    }
-
+  createModule(name:string, createModuleCb:Function) {
     this
     .assert(()=>!this.modules[name], `module (name='${name}') aleady registered`)
     .log(`register module '${name}'`);

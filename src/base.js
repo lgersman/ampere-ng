@@ -92,7 +92,7 @@ export default class Base {
       },
       ex=>{
         this.log.error(ex ? ex.message || ex : `unknown error occured(arguments=${arguments})`);
-        return Promise.reject( ex);
+        return Promise.reject(ex);
       }
     );
   }
@@ -121,7 +121,7 @@ export default class Base {
     if (!condition) {
       (typeof(msg)=='function') && (msg = msg());
 
-      throw new Error( `[${this.type}:${this.options[Constants.NAMESPACE]}] : ${msg}`);
+      throw new Error(`[${this.type}:${this.options[Constants.NAMESPACE]}] : ${msg}`);
     }
 
     return this;

@@ -1,13 +1,10 @@
 {
   "name": "orangevolt-ampere-ng",
-  "version": "0.0.1",
-  "description": "Orangevolt Ampere implementation written in ES6",
+  "version": "0.0.2",
+  "description": "Orangevolt Ampere core written in ES6/ES7.",
   "homepage": "https://github.com/lgersman/orangevolt-ampere-ng",
   "scripts": {
-    "tdd": "node_modules/.bin/supervisor -w src,test,examples -q -n exit -x node_modules/.bin/gulp test",
-    "test": "node ./node_modules/.bin/gulp test:node",
-    "debug-tests": "node --debug-brk build/commonjs/test/test-node-specs.js -v",
-    "build": "node node_modules/.bin/gulp"
+    "test": "node_modules/.bin/eslint src test && node test/test-node-specs.js -v"
   },
   "repository": {
     "type": "git",
@@ -22,7 +19,9 @@
     "es6",
     "gulp",
     "ecmascript6",
-    "es6"
+    "es6",
+    "babel",
+    ""
   ],
   "author": "Lars Gersmann <lars.gersmann@gmail.com> (http://www.orangevolt.com/)",
   "license": [
@@ -30,21 +29,7 @@
     "MIT"
   ],
   "devDependencies": {
-    "bower": "^1.3.12",
-    "browserify": "^8.1.3",
-    "del": "^1.1.1",
-    "event-stream": "^3.2.2",
-    "gulp": "^3.8.11",
-    "gulp-gzip": "^1.0.0",
-    "gulp-shell": "^0.3.0",
     "minijasminenode2": "^1.0.0",
-    "rtts-assert": "git://github.com/angular/assert#dist",
-    "supervisor": "^0.6.0",
-    "sweet.js": "^0.7.4",
-    "traceur": "0.0.81",
-    "uglify-js": "^2.4.16",
-    "uglifyify": "^3.0.1",
-    "vinyl-source-stream": "^1.0.0",
     "eslint": "~1.1.0",
     "babel-eslint": "~4.0.5",
     "babel": "~5.8.21",

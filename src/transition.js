@@ -25,10 +25,12 @@ export default class Transition extends Base {
     */
   constructor(view, name:string, cb:Function, targetViewOrCb) {
       // manual type assertion
-    if (view instanceof View) {
-      assert.argumentTypes(view, View, name, $traceurRuntime.type.string, cb, Function, targetViewOrCb, View);
-    } else {
-      assert.argumentTypes(view, Module, name, $traceurRuntime.type.string, cb, Function, targetViewOrCb, targetViewOrCb instanceof View ? View : Function);
+    if (!((view instanceof View) || (view instanceof Module))){
+      throw new Error('view expected to be of type View or Module');
+    }
+    
+    if (!((targetViewOrCb instanceof View) || (typeof(targetViewOrCb)==='function'))){
+      throw new Error('view expected to be of type View or Function');
     }
 
     super(name, 'transition', view.options);
@@ -53,7 +55,7 @@ export default class Transition extends Base {
         }
       });
     } else {
-      this.assert( false, '1st argument expected to be a View or Module');
+      this.assert(false, '1st argument expected to be a View or Module');
     }
 
     let _disabled, _transaction;
@@ -92,11 +94,7 @@ export default class Transition extends Base {
         configurable : false
       },
       'transaction' : {
-        set       : transaction=>{
-            // TODO : Function type as argument doesnt work with traceur yet
-            // thats why we call assert manually
-          assert.argumentTypes(transaction, Function);
-
+        set       : (transaction:Function)=>{
           _transaction = (...args)=>{
             return new Promise((resolve, reject)=>{
               try {

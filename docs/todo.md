@@ -1,14 +1,12 @@
-* app.ui tests
+* mv Ampere.domain to Ampere.createDomain
+* mv Ampere.app to Ampere.createApp
+* add eventemitter to app for signalling "render", "rendered" etc (take names from react ?)
 
-* port wrapOperation from app.js to polymer app.js
 
 * history undo/redo
-** server : -> file not found -> return current page
 ** client configurable (hashbang or native)
 
-* undo button in toast reinmachen wenn undo function was returned
-
-* progress anbindung
+* progress via app event emitter
 
 * collect unhandled exceptions : https://github.com/occ/TraceKit
 
@@ -21,8 +19,6 @@
 http://lokijs.org
 
 * http://eligrey.com/blog/post/saving-generated-files-on-the-client-side/
-
-# notes
 
 ## docs
 

@@ -7,12 +7,7 @@
 import Logger from './logger';
 import Constants from './constants';
 
-  // configure Ampere logging
-if (global.Ampere && global.Ampere.DEBUG) {
-  Logger.filter = /^.*/;
-}
-
-Logger('ampere').info( 'loaded');
+Logger('ampere').info('loaded');
 
   /**
   * creates a new domain
