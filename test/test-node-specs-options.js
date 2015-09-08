@@ -5,6 +5,8 @@ const VERBOSE = process.argv.some(item=>item==='-v'),
 
 if (DEBUG) {
   Logger.filter = /^.*/;
+} else {
+  Logger.filter = [];
 }
 
 module.exports = {

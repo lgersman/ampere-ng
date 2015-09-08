@@ -28,6 +28,7 @@ function createDomain(name:string=Constants.DEFAULT, cb:Function) {
 */
 import App from './app';
 import View from './view';
+
 function createApp(view:View, cb:Function=()=>{}) {
   return new App(view, cb);
 }

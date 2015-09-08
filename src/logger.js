@@ -1,4 +1,4 @@
-let filters = [];
+let filters = [/warn|error/];
 
 let log = function(priority,args) {
   if (priority!='log' && console) {
@@ -18,22 +18,22 @@ class Log {
   }
 
   log() {
-    log('log',this,arguments);
+    this::log('log',arguments);
     return this;
   }
 
   info() {
-    this::log('info',this,arguments);
+    this::log('info',arguments);
     return this;
   }
 
   warn() {
-    ::this.log('warn',this,arguments);
+    this::log('warn',arguments);
     return this;
   }
 
   error() {
-    this::log('error',this,arguments);
+    this::log('error',arguments);
     return this;
   }
 
@@ -81,3 +81,7 @@ Object.defineProperty(Logger, 'filter', {
   configurable : false,
   enumerable   : true
 });
+
+if (process.env.NODE_ENV==='development') {
+  Logger.filter=/^.*/;
+}

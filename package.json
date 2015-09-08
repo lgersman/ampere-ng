@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "description": "Orangevolt Ampere core written in ES6/ES7.",
   "homepage": "https://github.com/lgersman/orangevolt-ampere-ng",
+  "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/eslint src test && node test/test-node-specs.js -v"
   },
@@ -20,8 +21,7 @@
     "gulp",
     "ecmascript6",
     "es6",
-    "babel",
-    ""
+    "babel"
   ],
   "author": "Lars Gersmann <lars.gersmann@gmail.com> (http://www.orangevolt.com/)",
   "license": [
@@ -33,6 +33,7 @@
     "eslint": "~1.1.0",
     "babel-eslint": "~4.0.5",
     "babel": "~5.8.21",
-    "babel-plugin-typecheck": "~1.2.0"
+    "babel-plugin-typecheck": "~1.2.0",
+    "babel-runtime": "~5.8.20"
   }
 }
