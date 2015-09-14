@@ -91,7 +91,10 @@ export default class Base {
         return arg;
       },
       ex=>{
-        this.log.error(ex ? ex.message || ex : `unknown error occured(arguments=${arguments})`);
+        if (process.env.NODE_ENV!=='production') {
+          const message = ex ? ex.message || ex : `unknown error occured(arguments=${arguments})`;
+          console && console.error(`[${this.type}:${this.options[Constants.NAMESPACE]}] : ${message}`);
+        }
         return Promise.reject(ex);
       }
     );

@@ -456,7 +456,7 @@ describe('App', function () {
           }
 
           module.createState(Constants.DEFAULT, state=>{
-            let target = state.createView('target', view=>view.createTemplate);
+            let target = state.createView('target', view=>view.createTemplate('mytemplate'));
 
             view = state.createView(Constants.DEFAULT, view=>{
               view.createTemplate('mytemplate');
@@ -908,7 +908,7 @@ describe('App', function () {
                 });
 
                 let c = state.createView('c', view=>{
-                  view=>view.createTemplate('mytemplate');
+                  view.createTemplate('mytemplate');
 
                   view.createTransition('concat_b',transition=>{
                     transition.transaction = (transition, ...params)=>{

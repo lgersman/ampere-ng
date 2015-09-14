@@ -1,8 +1,15 @@
+import Base from './base'
+
+  // hasOwnMember is Object.hasOwnProperty with symbol support
+const hasOwnMember = (obj, property)=>
+  Object.getOwnPropertySymbols(obj).concat(Object.getOwnPropertyNames(obj))
+  .indexOf(property)!==-1
+;
 
 
 var Ui = {
   findOption(optionKey, object:Base, traversalProperties=[]) {
-    if (!traversalProperties) {
+    if (!traversalProperties.length) {
       switch (object.type) {
         case 'transition' :
           traversalProperties = ['target'/*, 'state'*/];
@@ -106,26 +113,26 @@ var Ui = {
   },
 
   caption(obj, defaultValue) {
-    return findOption(Ui.CAPTION, obj) || defaultValue;
+    return Ui.findOption(Ui.CAPTION, obj) || defaultValue;
   },
 
   icon(obj, defaultValue) {
-    return findOption(Ui.ICON, obj) || defaultValue;
+    return Ui.findOption(Ui.ICON, obj) || defaultValue;
   },
 
   description(obj, defaultValue) {
-    return findOption(Ui.DESCRIPTION, obj) || defaultValue;
+    return Ui.findOption(Ui.DESCRIPTION, obj) || defaultValue;
   },
 
   hotkey(obj, defaultValue) {
-    return findOption(Ui.HOTKEY, obj) || defaultValue;
+    return Ui.findOption(Ui.HOTKEY, obj) || defaultValue;
   },
 
     /**
     * @return array normalized location option 
     */
   location(obj) {
-    let location = findOption(Ui.LOCATION, obj) || [];
+    let location = Ui.findOption(Ui.LOCATION, obj) || [];
 
     Array.isArray(location) || (location=location!==undefined ? [location] : []);
 

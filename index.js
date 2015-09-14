@@ -15,4 +15,10 @@ Object.defineProperty(Ampere, 'VERSION', {
 
 export default Ampere;
 
+export App from './src/app';
+export View from './src/view';
+export Constants from './src/constants';
+export Logger from './src/logger';
+export Ui from './src/ui';
+
 Logger(package_json.name).info(`version=${Ampere.VERSION}`);

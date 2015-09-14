@@ -32,8 +32,9 @@ export default class View extends Base {
       return new Promise((resolve,reject)=>{
         try {
           return Promise.resolve(cb(this)).then(val=>{
-            !('template' in this) && this.log('no template was assigned.');
-            return val;
+            //!('template' in this) && this.log('no template was assigned.');
+            //this.assert('template' in this, 'no template was assigned.');
+            return ('template' in this) ? val : Promise.reject('no template was assigned.');
           })
           .then(resolve, reject);
         } catch(ex) {
@@ -84,6 +85,8 @@ export default class View extends Base {
         writable  : false
       }
     });
+    
+    return this;
   }
 }
 
